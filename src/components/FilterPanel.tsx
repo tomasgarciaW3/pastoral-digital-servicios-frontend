@@ -26,29 +26,30 @@ export const FilterPanel = ({ filters, onFilterChange }: FilterPanelProps) => {
         <h2 className="font-semibold text-foreground">Filtros</h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        {/* Services */}
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">Servicios</Label>
-          <div className="grid grid-cols-2 gap-2">
-            {serviceTypes.map((service) => (
-              <div key={service.value} className="flex items-center space-x-2">
-                <Checkbox
-                  id={service.value}
-                  checked={filters.services.includes(service.value)}
-                  onCheckedChange={() => handleServiceToggle(service.value)}
-                />
-                <label
-                  htmlFor={service.value}
-                  className="text-xs leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  {service.label}
-                </label>
-              </div>
-            ))}
-          </div>
+      {/* Services */}
+      <div className="mb-4">
+        <Label className="text-sm font-medium mb-2 block">Servicios</Label>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+          {serviceTypes.map((service) => (
+            <div key={service.value} className="flex items-center space-x-2">
+              <Checkbox
+                id={service.value}
+                checked={filters.services.includes(service.value)}
+                onCheckedChange={() => handleServiceToggle(service.value)}
+              />
+              <label
+                htmlFor={service.value}
+                className="text-xs leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                {service.label}
+              </label>
+            </div>
+          ))}
         </div>
+      </div>
 
+      {/* Location Filters in 2x2 Grid */}
+      <div className="grid grid-cols-2 gap-4">
         {/* Country */}
         <div className="space-y-2">
           <Label className="text-sm font-medium">País</Label>

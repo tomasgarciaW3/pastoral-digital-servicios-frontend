@@ -61,6 +61,7 @@ const Index = () => {
               parishes={filteredParishes}
               selectedParish={selectedParish}
               onParishSelect={setSelectedParish}
+              country={filters.country}
             />
           </div>
 
