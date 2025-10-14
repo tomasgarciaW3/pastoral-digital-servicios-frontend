@@ -12,6 +12,8 @@ const Index = () => {
   const [selectedParish, setSelectedParish] = useState<Parish | null>(null);
   const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
   const [filters, setFilters] = useState<FilterState>({
+    search: "",
+    selectedParishes: [],
     services: [],
     country: "all",
     province: "all",
@@ -24,6 +26,11 @@ const Index = () => {
 
   const filteredParishes = useMemo(() => {
     return mockParishes.filter((parish) => {
+      // Filter by selected parishes
+      if (filters.selectedParishes.length > 0 && !filters.selectedParishes.includes(parish.id)) {
+        return false;
+      }
+
       // Filter by services
       if (filters.services.length > 0) {
         const hasService = filters.services.some((serviceFilter) =>
@@ -51,7 +58,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <FilterPanel filters={filters} onFilterChange={setFilters} />
+      <FilterPanel filters={filters} onFilterChange={setFilters} parishes={mockParishes} />
       
       <div className="container mx-auto px-4 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-280px)]">

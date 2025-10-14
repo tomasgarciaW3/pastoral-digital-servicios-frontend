@@ -45,6 +45,8 @@ export interface Parish {
 }
 
 export interface FilterState {
+  search: string;
+  selectedParishes: string[];
   services: string[];
   country: string;
   province: string;
