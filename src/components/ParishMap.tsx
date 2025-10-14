@@ -32,7 +32,7 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect }: ParishMa
     : [-34.6037, -58.3816];
 
   return (
-    <div className="h-full w-full rounded-lg overflow-hidden shadow-elevated">
+    <div className="h-full w-full rounded-lg overflow-hidden shadow-elevated relative z-0">
       <MapContainer
         center={center}
         zoom={selectedParish ? 14 : 6}

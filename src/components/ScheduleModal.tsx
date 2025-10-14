@@ -38,7 +38,7 @@ export const ScheduleModal = ({ open, onOpenChange, parish }: ScheduleModalProps
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md z-[1000]">
         <DialogHeader>
           <DialogTitle>Agendar Servicio</DialogTitle>
           <DialogDescription>
@@ -78,7 +78,7 @@ export const ScheduleModal = ({ open, onOpenChange, parish }: ScheduleModalProps
               <SelectTrigger>
                 <SelectValue placeholder="Seleccioná un servicio" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="z-[1001]">
                 {serviceTypes.map((service) => (
                   <SelectItem key={service.value} value={service.label}>
                     {service.label}

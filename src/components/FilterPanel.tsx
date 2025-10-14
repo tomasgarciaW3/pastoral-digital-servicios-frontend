@@ -59,7 +59,7 @@ export const FilterPanel = ({ filters, onFilterChange }: FilterPanelProps) => {
             <SelectTrigger>
               <SelectValue placeholder="Todas" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="z-[1001]">
               <SelectItem value="all">Todas</SelectItem>
               {provinces.map((province) => (
                 <SelectItem key={province} value={province}>
@@ -80,7 +80,7 @@ export const FilterPanel = ({ filters, onFilterChange }: FilterPanelProps) => {
             <SelectTrigger>
               <SelectValue placeholder="Cualquiera" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="z-[1001]">
               <SelectItem value="all">Cualquiera</SelectItem>
               <SelectItem value="morning">Mañana (6:00-12:00)</SelectItem>
               <SelectItem value="afternoon">Tarde (12:00-18:00)</SelectItem>
