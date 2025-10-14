@@ -13,6 +13,7 @@ const Index = () => {
   const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
   const [filters, setFilters] = useState<FilterState>({
     services: [],
+    country: "all",
     province: "all",
     city: "",
     dayTime: "all",
@@ -29,6 +30,11 @@ const Index = () => {
           parish.services.some((s) => s.type === serviceFilter)
         );
         if (!hasService) return false;
+      }
+
+      // Filter by country
+      if (filters.country !== "all" && parish.country !== filters.country) {
+        return false;
       }
 
       // Filter by province

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { serviceTypes, provinces } from "@/data/mockParishes";
+import { serviceTypes, provinces, countries } from "@/data/mockParishes";
 import { FilterState } from "@/types/parish";
 
 interface FilterPanelProps {
@@ -26,7 +26,7 @@ export const FilterPanel = ({ filters, onFilterChange }: FilterPanelProps) => {
         <h2 className="font-semibold text-foreground">Filtros</h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         {/* Services */}
         <div className="space-y-2">
           <Label className="text-sm font-medium">Servicios</Label>
@@ -47,6 +47,27 @@ export const FilterPanel = ({ filters, onFilterChange }: FilterPanelProps) => {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Country */}
+        <div className="space-y-2">
+          <Label className="text-sm font-medium">País</Label>
+          <Select
+            value={filters.country}
+            onValueChange={(value) => onFilterChange({ ...filters, country: value, province: "all", city: "" })}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Todos" />
+            </SelectTrigger>
+            <SelectContent className="z-[1001]">
+              <SelectItem value="all">Todos</SelectItem>
+              {countries.map((country) => (
+                <SelectItem key={country} value={country}>
+                  {country}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Province */}

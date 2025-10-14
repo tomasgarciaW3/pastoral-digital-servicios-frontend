@@ -18,6 +18,7 @@ export interface Parish {
   name: string;
   pastor: string;
   address: string;
+  country: string;
   province: string;
   city: string;
   location: {
@@ -45,6 +46,7 @@ export interface Parish {
 
 export interface FilterState {
   services: string[];
+  country: string;
   province: string;
   city: string;
   dayTime: string;

@@ -6,6 +6,7 @@ export const mockParishes: Parish[] = [
     name: "Parroquia San José",
     pastor: "Pbro. Juan Pérez",
     address: "Av. Siempre Viva 123, CABA",
+    country: "Argentina",
     province: "Buenos Aires",
     city: "CABA",
     location: { lat: -34.6037, lng: -58.3816 },
@@ -49,6 +50,7 @@ export const mockParishes: Parish[] = [
     name: "Parroquia Nuestra Señora de Luján",
     pastor: "Pbro. Carlos González",
     address: "Calle Falsa 456, Luján",
+    country: "Argentina",
     province: "Buenos Aires",
     city: "Luján",
     location: { lat: -34.5708, lng: -59.1156 },
@@ -87,6 +89,7 @@ export const mockParishes: Parish[] = [
     name: "Parroquia San Francisco",
     pastor: "Pbro. Miguel Rodríguez",
     address: "Av. Colón 789, Córdoba Capital",
+    country: "Argentina",
     province: "Córdoba",
     city: "Córdoba Capital",
     location: { lat: -31.4201, lng: -64.1888 },
@@ -121,6 +124,7 @@ export const mockParishes: Parish[] = [
     name: "Parroquia Santa María",
     pastor: "Pbro. Fernando López",
     address: "San Martín 321, Rosario",
+    country: "Argentina",
     province: "Santa Fe",
     city: "Rosario",
     location: { lat: -32.9442, lng: -60.6505 },
@@ -158,6 +162,7 @@ export const mockParishes: Parish[] = [
     name: "Parroquia Cristo Rey",
     pastor: "Pbro. Roberto Sánchez",
     address: "Las Heras 567, Mendoza",
+    country: "Argentina",
     province: "Mendoza",
     city: "Mendoza Capital",
     location: { lat: -32.8895, lng: -68.8458 },
@@ -193,6 +198,7 @@ export const mockParishes: Parish[] = [
     name: "Parroquia Santo Domingo",
     pastor: "Pbro. Martín Fernández",
     address: "Defensa 422, San Telmo, CABA",
+    country: "Argentina",
     province: "Buenos Aires",
     city: "CABA",
     location: { lat: -34.6204, lng: -58.3731 },
@@ -223,6 +229,14 @@ export const mockParishes: Parish[] = [
     accessibility: { ramp: false, parking: false },
     languages: ["Español", "Guaraní"],
   },
+];
+
+export const countries = [
+  "Argentina",
+  "Chile",
+  "Uruguay",
+  "Paraguay",
+  "Brasil",
 ];
 
 export const provinces = [
