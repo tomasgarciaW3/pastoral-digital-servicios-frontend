@@ -26,102 +26,104 @@ export const FilterPanel = ({ filters, onFilterChange }: FilterPanelProps) => {
         <h2 className="font-semibold text-foreground">Filtros</h2>
       </div>
 
-      {/* Services */}
-      <div className="mb-4">
-        <Label className="text-sm font-medium mb-2 block">Servicios</Label>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-          {serviceTypes.map((service) => (
-            <div key={service.value} className="flex items-center space-x-2">
-              <Checkbox
-                id={service.value}
-                checked={filters.services.includes(service.value)}
-                onCheckedChange={() => handleServiceToggle(service.value)}
-              />
-              <label
-                htmlFor={service.value}
-                className="text-xs leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                {service.label}
-              </label>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Location Filters in 2x2 Grid */}
-      <div className="grid grid-cols-2 gap-4">
-        {/* Country */}
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">País</Label>
-          <Select
-            value={filters.country}
-            onValueChange={(value) => onFilterChange({ ...filters, country: value, province: "all", city: "" })}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Todos" />
-            </SelectTrigger>
-            <SelectContent className="z-[1001]">
-              <SelectItem value="all">Todos</SelectItem>
-              {countries.map((country) => (
-                <SelectItem key={country} value={country}>
-                  {country}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      <div className="grid grid-cols-1 md:grid-cols-[1fr,auto] gap-6">
+        {/* Services */}
+        <div>
+          <Label className="text-sm font-medium mb-2 block">Servicios</Label>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+            {serviceTypes.map((service) => (
+              <div key={service.value} className="flex items-center space-x-2">
+                <Checkbox
+                  id={service.value}
+                  checked={filters.services.includes(service.value)}
+                  onCheckedChange={() => handleServiceToggle(service.value)}
+                />
+                <label
+                  htmlFor={service.value}
+                  className="text-xs leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  {service.label}
+                </label>
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Province */}
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">Provincia</Label>
-          <Select
-            value={filters.province}
-            onValueChange={(value) => onFilterChange({ ...filters, province: value, city: "" })}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Todas" />
-            </SelectTrigger>
-            <SelectContent className="z-[1001]">
-              <SelectItem value="all">Todas</SelectItem>
-              {provinces.map((province) => (
-                <SelectItem key={province} value={province}>
-                  {province}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        {/* Location Filters in 2x2 Grid */}
+        <div className="grid grid-cols-2 gap-4">
+          {/* Country */}
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">País</Label>
+            <Select
+              value={filters.country}
+              onValueChange={(value) => onFilterChange({ ...filters, country: value, province: "all", city: "" })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Todos" />
+              </SelectTrigger>
+              <SelectContent className="z-[1001]">
+                <SelectItem value="all">Todos</SelectItem>
+                {countries.map((country) => (
+                  <SelectItem key={country} value={country}>
+                    {country}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-        {/* Day/Time */}
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">Horario</Label>
-          <Select
-            value={filters.dayTime}
-            onValueChange={(value) => onFilterChange({ ...filters, dayTime: value })}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Cualquiera" />
-            </SelectTrigger>
-            <SelectContent className="z-[1001]">
-              <SelectItem value="all">Cualquiera</SelectItem>
-              <SelectItem value="morning">Mañana (6:00-12:00)</SelectItem>
-              <SelectItem value="afternoon">Tarde (12:00-18:00)</SelectItem>
-              <SelectItem value="evening">Noche (18:00-23:00)</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+          {/* Province */}
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Provincia</Label>
+            <Select
+              value={filters.province}
+              onValueChange={(value) => onFilterChange({ ...filters, province: value, city: "" })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Todas" />
+              </SelectTrigger>
+              <SelectContent className="z-[1001]">
+                <SelectItem value="all">Todas</SelectItem>
+                {provinces.map((province) => (
+                  <SelectItem key={province} value={province}>
+                    {province}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-        {/* Near Me */}
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">Ubicación</Label>
-          <Button
-            variant={filters.nearMe ? "default" : "outline"}
-            className="w-full"
-            onClick={() => onFilterChange({ ...filters, nearMe: !filters.nearMe })}
-          >
-            <MapPin className="h-4 w-4 mr-2" />
-            Cerca mío
-          </Button>
+          {/* Day/Time */}
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Horario</Label>
+            <Select
+              value={filters.dayTime}
+              onValueChange={(value) => onFilterChange({ ...filters, dayTime: value })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Cualquiera" />
+              </SelectTrigger>
+              <SelectContent className="z-[1001]">
+                <SelectItem value="all">Cualquiera</SelectItem>
+                <SelectItem value="morning">Mañana (6:00-12:00)</SelectItem>
+                <SelectItem value="afternoon">Tarde (12:00-18:00)</SelectItem>
+                <SelectItem value="evening">Noche (18:00-23:00)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Near Me */}
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Ubicación</Label>
+            <Button
+              variant={filters.nearMe ? "default" : "outline"}
+              className="w-full"
+              onClick={() => onFilterChange({ ...filters, nearMe: !filters.nearMe })}
+            >
+              <MapPin className="h-4 w-4 mr-2" />
+              Cerca mío
+            </Button>
+          </div>
         </div>
       </div>
     </div>
