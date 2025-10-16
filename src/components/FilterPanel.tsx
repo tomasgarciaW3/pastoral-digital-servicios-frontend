@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from "@/components/ui/command";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { serviceTypes, provinces, countries } from "@/data/mockParishes";
 import { FilterState, Parish } from "@/types/parish";
 import { useState } from "react";
@@ -45,6 +46,96 @@ export const FilterPanel = ({ filters, onFilterChange, parishes }: FilterPanelPr
       <div className="flex items-center gap-2">
         <Filter className="h-5 w-5 text-primary" />
         <h2 className="font-semibold text-foreground">Filtros</h2>
+      </div>
+
+      {/* Ubicación */}
+      <div className="space-y-2">
+        <Label className="text-sm font-medium">Ubicación</Label>
+        
+        <Tabs defaultValue="country" className="w-full">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="country">País</TabsTrigger>
+            <TabsTrigger value="province">Provincia</TabsTrigger>
+            <TabsTrigger value="city">Localidad</TabsTrigger>
+            <TabsTrigger value="nearme">Cerca mío</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="country" className="mt-3">
+            <Select
+              value={filters.country}
+              onValueChange={(value) => onFilterChange({ ...filters, country: value, province: "all", city: "" })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Seleccionar país" />
+              </SelectTrigger>
+              <SelectContent className="z-[1001]">
+                <SelectItem value="all">Todos</SelectItem>
+                {countries.map((country) => (
+                  <SelectItem key={country} value={country}>
+                    {country}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </TabsContent>
+          
+          <TabsContent value="province" className="mt-3">
+            <Select
+              value={filters.province}
+              onValueChange={(value) => onFilterChange({ ...filters, province: value, city: "" })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Seleccionar provincia" />
+              </SelectTrigger>
+              <SelectContent className="z-[1001]">
+                <SelectItem value="all">Todas</SelectItem>
+                {provinces.map((province) => (
+                  <SelectItem key={province} value={province}>
+                    {province}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </TabsContent>
+          
+          <TabsContent value="city" className="mt-3">
+            <Input
+              placeholder="Buscar localidad"
+              value={filters.city}
+              onChange={(e) => onFilterChange({ ...filters, city: e.target.value })}
+            />
+          </TabsContent>
+          
+          <TabsContent value="nearme" className="mt-3">
+            <Button
+              variant={filters.nearMe ? "default" : "outline"}
+              className="w-full"
+              onClick={() => onFilterChange({ ...filters, nearMe: !filters.nearMe })}
+            >
+              <MapPin className="h-4 w-4 mr-2" />
+              {filters.nearMe ? "Activado" : "Activar ubicación"}
+            </Button>
+          </TabsContent>
+        </Tabs>
+      </div>
+
+      {/* Horario */}
+      <div className="space-y-2">
+        <Label className="text-sm font-medium">Horario</Label>
+        <Select
+          value={filters.dayTime}
+          onValueChange={(value) => onFilterChange({ ...filters, dayTime: value })}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Cualquiera" />
+          </SelectTrigger>
+          <SelectContent className="z-[1001]">
+            <SelectItem value="all">Cualquiera</SelectItem>
+            <SelectItem value="morning">Mañana (6:00-12:00)</SelectItem>
+            <SelectItem value="afternoon">Tarde (12:00-18:00)</SelectItem>
+            <SelectItem value="evening">Noche (18:00-23:00)</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Listado de parroquias */}
@@ -115,86 +206,6 @@ export const FilterPanel = ({ filters, onFilterChange, parishes }: FilterPanelPr
               </label>
             </div>
           ))}
-        </div>
-      </div>
-
-      {/* Ubicación */}
-      <div className="space-y-2">
-        <Label className="text-sm font-medium">Ubicación</Label>
-        
-        <div className="space-y-3">
-          {/* Country */}
-          <div className="space-y-2">
-            <Label className="text-xs text-muted-foreground">País</Label>
-            <Select
-              value={filters.country}
-              onValueChange={(value) => onFilterChange({ ...filters, country: value, province: "all", city: "" })}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Todos" />
-              </SelectTrigger>
-              <SelectContent className="z-[1001]">
-                <SelectItem value="all">Todos</SelectItem>
-                {countries.map((country) => (
-                  <SelectItem key={country} value={country}>
-                    {country}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Province */}
-          <div className="space-y-2">
-            <Label className="text-xs text-muted-foreground">Provincia</Label>
-            <Select
-              value={filters.province}
-              onValueChange={(value) => onFilterChange({ ...filters, province: value, city: "" })}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Todas" />
-              </SelectTrigger>
-              <SelectContent className="z-[1001]">
-                <SelectItem value="all">Todas</SelectItem>
-                {provinces.map((province) => (
-                  <SelectItem key={province} value={province}>
-                    {province}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Day/Time */}
-          <div className="space-y-2">
-            <Label className="text-xs text-muted-foreground">Horario</Label>
-            <Select
-              value={filters.dayTime}
-              onValueChange={(value) => onFilterChange({ ...filters, dayTime: value })}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Cualquiera" />
-              </SelectTrigger>
-              <SelectContent className="z-[1001]">
-                <SelectItem value="all">Cualquiera</SelectItem>
-                <SelectItem value="morning">Mañana (6:00-12:00)</SelectItem>
-                <SelectItem value="afternoon">Tarde (12:00-18:00)</SelectItem>
-                <SelectItem value="evening">Noche (18:00-23:00)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Near Me */}
-          <div className="space-y-2">
-            <Button
-              variant={filters.nearMe ? "default" : "outline"}
-              className="w-full"
-              onClick={() => onFilterChange({ ...filters, nearMe: !filters.nearMe })}
-            >
-              <MapPin className="h-4 w-4 mr-2" />
-              Cerca mío
-            </Button>
-          </div>
         </div>
       </div>
     </div>
