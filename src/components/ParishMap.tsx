@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from "@react-google-maps/api";
 import { Parish } from "@/types/parish";
 import { countryData } from "@/data/mockParishes";
+import { getParishMarkers, ParishMarker } from "@/services/parishService";
 
 interface ParishMapProps {
   parishes: Parish[];
@@ -26,8 +27,9 @@ const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "";
 
 export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, province }: ParishMapProps) => {
   const [map, setMap] = useState<google.maps.Map | null>(null);
-  const [activeMarker, setActiveMarker] = useState<string | null>(null);
+  const [activeMarker, setActiveMarker] = useState<string | number | null>(null);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [markers, setMarkers] = useState<ParishMarker[]>([]);
 
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
@@ -155,6 +157,49 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, p
     onParishSelect(parish);
   };
 
+  const handleApiMarkerClick = (marker: ParishMarker) => {
+    setActiveMarker(marker.parishId);
+    // TODO: Fetch full parish details when needed
+  };
+
+  // Fetch markers when map bounds change
+  const fetchMarkersInBounds = useCallback(() => {
+    if (!map) return;
+
+    const bounds = map.getBounds();
+    if (!bounds) return;
+
+    const ne = bounds.getNorthEast();
+    const sw = bounds.getSouthWest();
+
+    getParishMarkers({
+      min_lat: sw.lat(),
+      max_lat: ne.lat(),
+      min_lon: sw.lng(),
+      max_lon: ne.lng(),
+    })
+      .then((response) => {
+        setMarkers(response.markers);
+      })
+      .catch((error) => {
+        console.error("Error fetching markers:", error);
+      });
+  }, [map]);
+
+  // Fetch markers when map is idle (after panning/zooming)
+  useEffect(() => {
+    if (!map) return;
+
+    const listener = map.addListener("idle", fetchMarkersInBounds);
+
+    // Initial fetch
+    fetchMarkersInBounds();
+
+    return () => {
+      google.maps.event.removeListener(listener);
+    };
+  }, [map, fetchMarkersInBounds]);
+
   if (!isLoaded) {
     return (
       <div className="h-full w-full rounded-lg overflow-hidden shadow-elevated relative z-0 flex items-center justify-center bg-muted">
@@ -184,9 +229,10 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, p
           zoomControl: true,
         }}
       >
+        {/* Legacy parish markers (if any) */}
         {parishes.map((parish) => (
           <Marker
-            key={parish.id}
+            key={`parish-${parish.id}`}
             position={{ lat: parish.location.lat, lng: parish.location.lng }}
             onClick={() => handleMarkerClick(parish)}
           >
@@ -195,6 +241,24 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, p
                 <div className="text-sm">
                   <h3 className="font-semibold">{parish.name}</h3>
                   <p className="text-xs text-muted-foreground">{parish.address}</p>
+                </div>
+              </InfoWindow>
+            )}
+          </Marker>
+        ))}
+
+        {/* API markers */}
+        {markers.map((marker) => (
+          <Marker
+            key={`marker-${marker.parishId}`}
+            position={{ lat: marker.coordinates.lat, lng: marker.coordinates.long }}
+            onClick={() => handleApiMarkerClick(marker)}
+          >
+            {activeMarker === marker.parishId && (
+              <InfoWindow onCloseClick={() => setActiveMarker(null)}>
+                <div className="text-sm">
+                  <h3 className="font-semibold">{marker.title}</h3>
+                  <p className="text-xs text-muted-foreground">{marker.location}</p>
                 </div>
               </InfoWindow>
             )}

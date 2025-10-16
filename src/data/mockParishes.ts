@@ -240,25 +240,25 @@ export const countryData = {
       { name: "Buenos Aires", bounds: { lat: -36.6769, lng: -60.5588, zoom: 7 } },
       { name: "CABA", bounds: { lat: -34.6037, lng: -58.3816, zoom: 11 } },
       { name: "Córdoba", bounds: { lat: -31.4201, lng: -64.1888, zoom: 7 } },
-      { name: "Santa Fe", bounds: { lat: -31.6107, lng: -60.6973, zoom: 7 } },
+      { name: "Chaco", bounds: { lat: -27.4514, lng: -59.0228, zoom: 7 } },
+      { name: "Corrientes", bounds: { lat: -27.4692, lng: -58.8306, zoom: 7 } },
+      { name: "Chubut", bounds: { lat: -43.3002, lng: -65.1023, zoom: 6 } },
+      { name: "Entre Ríos", bounds: { lat: -31.7333, lng: -60.5289, zoom: 7 } },
       { name: "Mendoza", bounds: { lat: -32.8895, lng: -68.8458, zoom: 7 } },
       { name: "Tucumán", bounds: { lat: -26.8083, lng: -65.2176, zoom: 8 } },
       { name: "Salta", bounds: { lat: -24.7859, lng: -65.4117, zoom: 7 } },
-      { name: "Entre Ríos", bounds: { lat: -31.7333, lng: -60.5289, zoom: 7 } },
       { name: "Misiones", bounds: { lat: -27.3621, lng: -55.9007, zoom: 7 } },
-      { name: "Corrientes", bounds: { lat: -27.4692, lng: -58.8306, zoom: 7 } },
-      { name: "Chaco", bounds: { lat: -27.4514, lng: -59.0228, zoom: 7 } },
+      { name: "Neuquén", bounds: { lat: -38.9516, lng: -68.0591, zoom: 7 } },
       { name: "Formosa", bounds: { lat: -26.1775, lng: -58.1781, zoom: 7 } },
       { name: "Jujuy", bounds: { lat: -24.1858, lng: -65.2995, zoom: 7 } },
-      { name: "Santiago del Estero", bounds: { lat: -27.7834, lng: -64.2642, zoom: 7 } },
       { name: "Catamarca", bounds: { lat: -28.4696, lng: -65.7852, zoom: 7 } },
       { name: "La Rioja", bounds: { lat: -29.4131, lng: -66.8559, zoom: 7 } },
-      { name: "San Juan", bounds: { lat: -31.5375, lng: -68.5364, zoom: 7 } },
-      { name: "San Luis", bounds: { lat: -33.2950, lng: -66.3356, zoom: 7 } },
       { name: "La Pampa", bounds: { lat: -36.6145, lng: -64.2843, zoom: 7 } },
-      { name: "Neuquén", bounds: { lat: -38.9516, lng: -68.0591, zoom: 7 } },
       { name: "Río Negro", bounds: { lat: -40.8135, lng: -63.0000, zoom: 6 } },
-      { name: "Chubut", bounds: { lat: -43.3002, lng: -65.1023, zoom: 6 } },
+      { name: "Santa Fe", bounds: { lat: -31.6107, lng: -60.6973, zoom: 7 } },
+      { name: "San Luis", bounds: { lat: -33.2950, lng: -66.3356, zoom: 7 } },
+      { name: "Santiago del Estero", bounds: { lat: -27.7834, lng: -64.2642, zoom: 7 } },
+      { name: "San Juan", bounds: { lat: -31.5375, lng: -68.5364, zoom: 7 } },
       { name: "Santa Cruz", bounds: { lat: -48.8157, lng: -69.9580, zoom: 6 } },
       { name: "Tierra del Fuego", bounds: { lat: -54.8019, lng: -68.3029, zoom: 6 } },
     ],
@@ -408,7 +408,9 @@ export const countryData = {
 export const countries = Object.keys(countryData);
 
 export const getProvincesForCountry = (country: string) => {
-  return countryData[country as keyof typeof countryData]?.provinces || [];
+  const provinces = countryData[country as keyof typeof countryData]?.provinces || [];
+  // Sort provinces alphabetically by name
+  return [...provinces].sort((a, b) => a.name.localeCompare(b.name));
 };
 
 export const serviceTypes = [
