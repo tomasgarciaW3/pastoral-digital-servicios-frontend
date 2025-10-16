@@ -2,12 +2,13 @@ import { Parish } from "@/types/parish";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Phone, Mail, Globe, MapPin, Clock, Accessibility } from "lucide-react";
+import { Calendar, Phone, Mail, Globe, MapPin, Clock, Accessibility, X } from "lucide-react";
 import { serviceTypes } from "@/data/mockParishes";
 
 interface ParishDetailProps {
   parish: Parish | null;
   onSchedule: () => void;
+  onClose: () => void;
 }
 
 const getDayName = (day: string) => {
@@ -23,7 +24,7 @@ const getDayName = (day: string) => {
   return days[day] || day;
 };
 
-export const ParishDetail = ({ parish, onSchedule }: ParishDetailProps) => {
+export const ParishDetail = ({ parish, onSchedule, onClose }: ParishDetailProps) => {
   if (!parish) {
     return (
       <div className="h-full flex items-center justify-center p-8">
@@ -37,7 +38,16 @@ export const ParishDetail = ({ parish, onSchedule }: ParishDetailProps) => {
   }
 
   return (
-    <div className="h-full overflow-y-auto p-6 space-y-6 animate-fade-in">
+    <div className="h-full overflow-y-auto p-6 space-y-6 animate-fade-in relative">
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={onClose}
+        className="absolute top-2 right-2 z-10"
+      >
+        <X className="h-4 w-4" />
+      </Button>
+      
       <Card className="shadow-soft">
         <CardHeader>
           <CardTitle className="text-2xl">{parish.name}</CardTitle>

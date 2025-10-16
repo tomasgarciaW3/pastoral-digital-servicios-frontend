@@ -60,7 +60,7 @@ const Index = () => {
       <Header />
       
       <div className="container mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-[320px,1fr,400px] gap-6 h-[calc(100vh-120px)]">
+        <div className={`grid grid-cols-1 gap-6 h-[calc(100vh-120px)] ${selectedParish ? 'lg:grid-cols-[320px,1fr,400px]' : 'lg:grid-cols-[320px,1fr]'}`}>
           {/* Filter Panel - Left */}
           <div className="h-full overflow-y-auto">
             <FilterPanel filters={filters} onFilterChange={setFilters} parishes={mockParishes} />
@@ -77,12 +77,15 @@ const Index = () => {
           </div>
 
           {/* Detail Section - Right */}
-          <div className="h-full min-h-[500px] bg-card border border-border rounded-lg shadow-soft overflow-hidden">
-            <ParishDetail
-              parish={selectedParish}
-              onSchedule={() => setScheduleModalOpen(true)}
-            />
-          </div>
+          {selectedParish && (
+            <div className="h-full min-h-[500px] bg-card border border-border rounded-lg shadow-soft overflow-hidden">
+              <ParishDetail
+                parish={selectedParish}
+                onSchedule={() => setScheduleModalOpen(true)}
+                onClose={() => setSelectedParish(null)}
+              />
+            </div>
+          )}
         </div>
       </div>
 
