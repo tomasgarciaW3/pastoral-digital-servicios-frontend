@@ -119,25 +119,6 @@ export const FilterPanel = ({ filters, onFilterChange, parishes }: FilterPanelPr
         </Tabs>
       </div>
 
-      {/* Horario */}
-      <div className="space-y-2">
-        <Label className="text-sm font-medium">Horario</Label>
-        <Select
-          value={filters.dayTime}
-          onValueChange={(value) => onFilterChange({ ...filters, dayTime: value })}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Cualquiera" />
-          </SelectTrigger>
-          <SelectContent className="z-[1001]">
-            <SelectItem value="all">Cualquiera</SelectItem>
-            <SelectItem value="morning">Mañana (6:00-12:00)</SelectItem>
-            <SelectItem value="afternoon">Tarde (12:00-18:00)</SelectItem>
-            <SelectItem value="evening">Noche (18:00-23:00)</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
       {/* Listado de parroquias */}
       <div className="space-y-2">
         <Label className="text-sm font-medium">Listado de parroquias</Label>
