@@ -88,6 +88,28 @@ export const FilterPanel = ({ filters, onFilterChange, parishes }: FilterPanelPr
           </div>
         </div>
 
+        {/* Servicios */}
+        <div className="space-y-2">
+          <Label className="text-sm font-medium">Servicios</Label>
+          <div className="grid grid-cols-3 gap-2">
+            {serviceTypes.map((service) => (
+              <div key={service.value} className="flex items-center space-x-2">
+                <Checkbox
+                  id={service.value}
+                  checked={filters.services.includes(service.value)}
+                  onCheckedChange={() => handleServiceToggle(service.value)}
+                />
+                <label
+                  htmlFor={service.value}
+                  className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                >
+                  {service.label}
+                </label>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Listado de parroquias */}
         <div className="space-y-2">
           <Label className="text-sm font-medium">Listado de parroquias</Label>
@@ -135,28 +157,6 @@ export const FilterPanel = ({ filters, onFilterChange, parishes }: FilterPanelPr
               </Command>
             </PopoverContent>
           </Popover>
-        </div>
-
-        {/* Servicios */}
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">Servicios</Label>
-          <div className="space-y-2">
-            {serviceTypes.map((service) => (
-              <div key={service.value} className="flex items-center space-x-2">
-                <Checkbox
-                  id={service.value}
-                  checked={filters.services.includes(service.value)}
-                  onCheckedChange={() => handleServiceToggle(service.value)}
-                />
-                <label
-                  htmlFor={service.value}
-                  className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                >
-                  {service.label}
-                </label>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
     </div>
