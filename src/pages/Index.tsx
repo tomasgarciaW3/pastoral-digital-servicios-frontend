@@ -56,37 +56,33 @@ const Index = () => {
   }, [filters]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-screen bg-background flex flex-col">
       <Header />
-      
-      <div className="container mx-auto px-4 py-6">
-        <div className="flex flex-col gap-6 h-[calc(100vh-120px)]">
-          {/* Filter Panel - Top */}
-          <div className="overflow-y-auto">
-            <FilterPanel filters={filters} onFilterChange={setFilters} parishes={mockParishes} />
-          </div>
 
-          {/* Map Section - Below with overlay */}
-          <div className="flex-1 min-h-[500px] relative">
-            <ParishMap
-              parishes={filteredParishes}
-              selectedParish={selectedParish}
-              onParishSelect={setSelectedParish}
-              country={filters.country}
-            />
-            
-            {/* Detail Section - Overlay on Map */}
-            {selectedParish && (
-              <div className="absolute top-4 right-4 w-96 max-h-[calc(100%-2rem)] bg-card border border-border rounded-lg shadow-lg overflow-hidden z-[1000]">
-                <ParishDetail
-                  parish={selectedParish}
-                  onSchedule={() => setScheduleModalOpen(true)}
-                  onClose={() => setSelectedParish(null)}
-                />
-              </div>
-            )}
-          </div>
+      {/* Map Section - Fullscreen */}
+      <div className="flex-1 relative overflow-hidden">
+        <ParishMap
+          parishes={filteredParishes}
+          selectedParish={selectedParish}
+          onParishSelect={setSelectedParish}
+          country={filters.country}
+        />
+
+        {/* Filter Panel - Overlay on Map */}
+        <div className="absolute top-4 left-4 w-80 z-[500]">
+          <FilterPanel filters={filters} onFilterChange={setFilters} parishes={mockParishes} />
         </div>
+
+        {/* Detail Section - Overlay on Map */}
+        {selectedParish && (
+          <div className="absolute top-4 right-4 w-96 max-h-[calc(100%-2rem)] bg-card border border-border rounded-lg shadow-lg overflow-hidden z-[1000]">
+            <ParishDetail
+              parish={selectedParish}
+              onSchedule={() => setScheduleModalOpen(true)}
+              onClose={() => setSelectedParish(null)}
+            />
+          </div>
+        )}
       </div>
 
       <ScheduleModal

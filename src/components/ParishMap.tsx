@@ -1,16 +1,6 @@
-import { useEffect } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { useEffect, useState, useCallback } from "react";
+import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from "@react-google-maps/api";
 import { Parish } from "@/types/parish";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
-
-// Fix for default marker icons in React Leaflet
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
-  iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
-  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
-});
 
 interface ParishMapProps {
   parishes: Parish[];
@@ -19,65 +9,120 @@ interface ParishMapProps {
   country: string;
 }
 
-const countryBounds: Record<string, [[number, number], [number, number]]> = {
-  Argentina: [[-55.0, -73.5], [-21.8, -53.6]],
-  Chile: [[-56.0, -75.6], [-17.5, -66.4]],
-  Uruguay: [[-35.0, -58.4], [-30.1, -53.1]],
-  Paraguay: [[-27.6, -62.6], [-19.3, -54.3]],
-  Brasil: [[-33.7, -73.9], [5.3, -34.8]],
+const countryBounds: Record<string, { lat: number; lng: number; zoom: number }> = {
+  Argentina: { lat: -38.4161, lng: -63.6167, zoom: 5 },
+  Chile: { lat: -35.6751, lng: -71.543, zoom: 5 },
+  Uruguay: { lat: -32.5228, lng: -55.7658, zoom: 7 },
+  Paraguay: { lat: -23.4425, lng: -58.4438, zoom: 6 },
+  Brasil: { lat: -14.235, lng: -51.9253, zoom: 4 },
 };
 
-const MapUpdater = ({ center, bounds }: { center: L.LatLngExpression; bounds?: L.LatLngBoundsExpression }) => {
-  const map = useMap();
-  useEffect(() => {
-    if (bounds) {
-      map.fitBounds(bounds);
-    } else {
-      map.setView(center, map.getZoom());
-    }
-  }, [center, bounds, map]);
-  return null;
+const mapContainerStyle = {
+  width: "100%",
+  height: "100%",
 };
+
+const defaultCenter = {
+  lat: -34.6037,
+  lng: -58.3816,
+};
+
+// Replace with your Google Maps API key
+const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "";
 
 export const ParishMap = ({ parishes, selectedParish, onParishSelect, country }: ParishMapProps) => {
-  const center: L.LatLngExpression = selectedParish
-    ? [selectedParish.location.lat, selectedParish.location.lng]
-    : [-34.6037, -58.3816];
+  const [map, setMap] = useState<google.maps.Map | null>(null);
+  const [activeMarker, setActiveMarker] = useState<string | null>(null);
 
-  const bounds = country !== "all" && countryBounds[country] 
-    ? (countryBounds[country] as L.LatLngBoundsExpression)
-    : undefined;
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: GOOGLE_MAPS_API_KEY,
+  });
+
+  const center = selectedParish
+    ? { lat: selectedParish.location.lat, lng: selectedParish.location.lng }
+    : country !== "all" && countryBounds[country]
+    ? countryBounds[country]
+    : defaultCenter;
+
+  const zoom = selectedParish ? 14 : country !== "all" && countryBounds[country] ? countryBounds[country].zoom : 6;
+
+  const onLoad = useCallback((map: google.maps.Map) => {
+    setMap(map);
+    // Configure zoom control position
+    map.setOptions({
+      zoomControlOptions: {
+        position: google.maps.ControlPosition.LEFT_BOTTOM,
+      },
+    });
+  }, []);
+
+  const onUnmount = useCallback(() => {
+    setMap(null);
+  }, []);
+
+  useEffect(() => {
+    if (map && selectedParish) {
+      map.panTo({ lat: selectedParish.location.lat, lng: selectedParish.location.lng });
+      map.setZoom(14);
+    } else if (map && country !== "all" && countryBounds[country]) {
+      const bounds = countryBounds[country];
+      map.panTo({ lat: bounds.lat, lng: bounds.lng });
+      map.setZoom(bounds.zoom);
+    }
+  }, [map, selectedParish, country]);
+
+  const handleMarkerClick = (parish: Parish) => {
+    setActiveMarker(parish.id);
+    onParishSelect(parish);
+  };
+
+  if (!isLoaded) {
+    return (
+      <div className="h-full w-full rounded-lg overflow-hidden shadow-elevated relative z-0 flex items-center justify-center bg-muted">
+        <p className="text-muted-foreground">Cargando mapa...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="h-full w-full rounded-lg overflow-hidden shadow-elevated relative z-0">
-      <MapContainer
+      <GoogleMap
+        mapContainerStyle={mapContainerStyle}
         center={center}
-        zoom={selectedParish ? 14 : 6}
-        style={{ height: "100%", width: "100%" }}
-        scrollWheelZoom={true}
+        zoom={zoom}
+        onLoad={onLoad}
+        onUnmount={onUnmount}
+        options={{
+          zoomControl: true,
+          streetViewControl: false,
+          mapTypeControl: false,
+          fullscreenControl: false,
+          scaleControl: false,
+          rotateControl: false,
+          keyboardShortcuts: false,
+          panControl: false,
+          disableDefaultUI: true,
+          zoomControl: true,
+        }}
       >
-        <MapUpdater center={center} bounds={bounds} />
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        />
         {parishes.map((parish) => (
           <Marker
             key={parish.id}
-            position={[parish.location.lat, parish.location.lng] as L.LatLngExpression}
-            eventHandlers={{
-              click: () => onParishSelect(parish),
-            }}
+            position={{ lat: parish.location.lat, lng: parish.location.lng }}
+            onClick={() => handleMarkerClick(parish)}
           >
-            <Popup>
-              <div className="text-sm">
-                <h3 className="font-semibold">{parish.name}</h3>
-                <p className="text-xs text-muted-foreground">{parish.address}</p>
-              </div>
-            </Popup>
+            {activeMarker === parish.id && (
+              <InfoWindow onCloseClick={() => setActiveMarker(null)}>
+                <div className="text-sm">
+                  <h3 className="font-semibold">{parish.name}</h3>
+                  <p className="text-xs text-muted-foreground">{parish.address}</p>
+                </div>
+              </InfoWindow>
+            )}
           </Marker>
         ))}
-      </MapContainer>
+      </GoogleMap>
     </div>
   );
 };

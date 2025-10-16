@@ -1,4 +1,4 @@
-import { Filter, Search } from "lucide-react";
+import { Filter, Search, ChevronDown, ChevronUp } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -17,6 +17,7 @@ interface FilterPanelProps {
 
 export const FilterPanel = ({ filters, onFilterChange, parishes }: FilterPanelProps) => {
   const [open, setOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const handleServiceToggle = (service: string) => {
     const newServices = filters.services.includes(service)
@@ -41,12 +42,23 @@ export const FilterPanel = ({ filters, onFilterChange, parishes }: FilterPanelPr
 
   return (
     <div className="bg-card border border-border rounded-lg p-4 shadow-soft">
-      <div className="flex items-center gap-2 mb-6">
-        <Filter className="h-5 w-5 text-primary" />
-        <h2 className="font-semibold text-foreground">Filtros</h2>
+      <div
+        className="flex items-center justify-between cursor-pointer"
+        onClick={() => setIsCollapsed(!isCollapsed)}
+      >
+        <div className="flex items-center gap-2">
+          <Filter className="h-5 w-5 text-primary" />
+          <h2 className="font-semibold text-foreground">Filtros</h2>
+        </div>
+        {isCollapsed ? (
+          <ChevronDown className="h-5 w-5 text-muted-foreground" />
+        ) : (
+          <ChevronUp className="h-5 w-5 text-muted-foreground" />
+        )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {!isCollapsed && (
+        <div className="flex flex-col gap-6 mt-6">
         {/* Ubicación */}
         <div className="space-y-3">
           <Label className="text-sm font-medium">Ubicación</Label>
@@ -91,7 +103,7 @@ export const FilterPanel = ({ filters, onFilterChange, parishes }: FilterPanelPr
         {/* Servicios */}
         <div className="space-y-2">
           <Label className="text-sm font-medium">Servicios</Label>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             {serviceTypes.map((service) => (
               <div key={service.value} className="flex items-center space-x-2">
                 <Checkbox
@@ -110,16 +122,16 @@ export const FilterPanel = ({ filters, onFilterChange, parishes }: FilterPanelPr
           </div>
         </div>
 
-        {/* Listado de parroquias */}
+        {/* Parroquias */}
         <div className="space-y-2">
-          <Label className="text-sm font-medium">Listado de parroquias</Label>
+          <Label className="text-sm font-medium">Parroquias</Label>
           
           <Popover open={open && filters.search.length > 0} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Buscar parroquias"
+                  placeholder="Buscar parroquia"
                   value={filters.search}
                   onChange={(e) => {
                     onFilterChange({ ...filters, search: e.target.value });
@@ -158,7 +170,8 @@ export const FilterPanel = ({ filters, onFilterChange, parishes }: FilterPanelPr
             </PopoverContent>
           </Popover>
         </div>
-      </div>
+        </div>
+      )}
     </div>
   );
 };
