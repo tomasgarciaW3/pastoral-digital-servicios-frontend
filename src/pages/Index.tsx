@@ -58,12 +58,16 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <FilterPanel filters={filters} onFilterChange={setFilters} parishes={mockParishes} />
       
       <div className="container mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-280px)]">
-          {/* Map Section - 65% */}
-          <div className="lg:col-span-2 h-full min-h-[500px]">
+        <div className="grid grid-cols-1 lg:grid-cols-[320px,1fr,400px] gap-6 h-[calc(100vh-120px)]">
+          {/* Filter Panel - Left */}
+          <div className="h-full overflow-y-auto">
+            <FilterPanel filters={filters} onFilterChange={setFilters} parishes={mockParishes} />
+          </div>
+
+          {/* Map Section - Center */}
+          <div className="h-full min-h-[500px]">
             <ParishMap
               parishes={filteredParishes}
               selectedParish={selectedParish}
@@ -72,8 +76,8 @@ const Index = () => {
             />
           </div>
 
-          {/* Detail Section - 35% */}
-          <div className="lg:col-span-1 h-full min-h-[500px] bg-card border border-border rounded-lg shadow-soft overflow-hidden">
+          {/* Detail Section - Right */}
+          <div className="h-full min-h-[500px] bg-card border border-border rounded-lg shadow-soft overflow-hidden">
             <ParishDetail
               parish={selectedParish}
               onSchedule={() => setScheduleModalOpen(true)}
