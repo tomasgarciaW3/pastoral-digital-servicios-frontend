@@ -60,32 +60,32 @@ const Index = () => {
       <Header />
       
       <div className="container mx-auto px-4 py-6">
-        <div className={`grid grid-cols-1 gap-6 h-[calc(100vh-120px)] ${selectedParish ? 'lg:grid-cols-[320px,1fr,400px]' : 'lg:grid-cols-[320px,1fr]'}`}>
+        <div className="grid grid-cols-1 lg:grid-cols-[320px,1fr] gap-6 h-[calc(100vh-120px)]">
           {/* Filter Panel - Left */}
           <div className="h-full overflow-y-auto">
             <FilterPanel filters={filters} onFilterChange={setFilters} parishes={mockParishes} />
           </div>
 
-          {/* Map Section - Center */}
-          <div className="h-full min-h-[500px]">
+          {/* Map Section - Center with overlay */}
+          <div className="h-full min-h-[500px] relative">
             <ParishMap
               parishes={filteredParishes}
               selectedParish={selectedParish}
               onParishSelect={setSelectedParish}
               country={filters.country}
             />
+            
+            {/* Detail Section - Overlay on Map */}
+            {selectedParish && (
+              <div className="absolute top-4 right-4 w-96 max-h-[calc(100%-2rem)] bg-card border border-border rounded-lg shadow-lg overflow-hidden z-[1000]">
+                <ParishDetail
+                  parish={selectedParish}
+                  onSchedule={() => setScheduleModalOpen(true)}
+                  onClose={() => setSelectedParish(null)}
+                />
+              </div>
+            )}
           </div>
-
-          {/* Detail Section - Right */}
-          {selectedParish && (
-            <div className="h-full min-h-[500px] bg-card border border-border rounded-lg shadow-soft overflow-hidden">
-              <ParishDetail
-                parish={selectedParish}
-                onSchedule={() => setScheduleModalOpen(true)}
-                onClose={() => setSelectedParish(null)}
-              />
-            </div>
-          )}
         </div>
       </div>
 
