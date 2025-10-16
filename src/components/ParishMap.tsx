@@ -1,21 +1,15 @@
 import { useEffect, useState, useCallback } from "react";
 import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from "@react-google-maps/api";
 import { Parish } from "@/types/parish";
+import { countryData } from "@/data/mockParishes";
 
 interface ParishMapProps {
   parishes: Parish[];
   selectedParish: Parish | null;
   onParishSelect: (parish: Parish) => void;
   country: string;
+  province: string;
 }
-
-const countryBounds: Record<string, { lat: number; lng: number; zoom: number }> = {
-  Argentina: { lat: -38.4161, lng: -63.6167, zoom: 5 },
-  Chile: { lat: -35.6751, lng: -71.543, zoom: 5 },
-  Uruguay: { lat: -32.5228, lng: -55.7658, zoom: 7 },
-  Paraguay: { lat: -23.4425, lng: -58.4438, zoom: 6 },
-  Brasil: { lat: -14.235, lng: -51.9253, zoom: 4 },
-};
 
 const mapContainerStyle = {
   width: "100%",
@@ -30,7 +24,7 @@ const defaultCenter = {
 // Replace with your Google Maps API key
 const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "";
 
-export const ParishMap = ({ parishes, selectedParish, onParishSelect, country }: ParishMapProps) => {
+export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, province }: ParishMapProps) => {
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [activeMarker, setActiveMarker] = useState<string | null>(null);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
@@ -58,13 +52,36 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country }:
     }
   }, []);
 
-  const center = selectedParish
-    ? { lat: selectedParish.location.lat, lng: selectedParish.location.lng }
-    : country !== "all" && countryBounds[country]
-    ? countryBounds[country]
-    : userLocation || defaultCenter;
+  // Get bounding box based on selected filters
+  const getLocationBounds = () => {
+    if (selectedParish) {
+      return { lat: selectedParish.location.lat, lng: selectedParish.location.lng, zoom: 14 };
+    }
 
-  const zoom = selectedParish ? 14 : country !== "all" && countryBounds[country] ? countryBounds[country].zoom : userLocation ? 12 : 6;
+    // Check for province/state selection
+    if (country !== "all" && province !== "all") {
+      const selectedCountry = countryData[country as keyof typeof countryData];
+      const selectedProvince = selectedCountry?.provinces.find(p => p.name === province);
+      if (selectedProvince) {
+        return selectedProvince.bounds;
+      }
+    }
+
+    // Check for country selection
+    if (country !== "all") {
+      const selectedCountry = countryData[country as keyof typeof countryData];
+      if (selectedCountry) {
+        return selectedCountry.bounds;
+      }
+    }
+
+    // Use user location or default
+    return userLocation ? { ...userLocation, zoom: 12 } : { ...defaultCenter, zoom: 6 };
+  };
+
+  const locationBounds = getLocationBounds();
+  const center = { lat: locationBounds.lat, lng: locationBounds.lng };
+  const zoom = locationBounds.zoom;
 
   const onLoad = useCallback((map: google.maps.Map) => {
     setMap(map);
@@ -97,15 +114,28 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country }:
   }, []);
 
   useEffect(() => {
-    if (map && selectedParish) {
+    if (!map) return;
+
+    if (selectedParish) {
       map.panTo({ lat: selectedParish.location.lat, lng: selectedParish.location.lng });
       map.setZoom(14);
-    } else if (map && country !== "all" && countryBounds[country]) {
-      const bounds = countryBounds[country];
-      map.panTo({ lat: bounds.lat, lng: bounds.lng });
-      map.setZoom(bounds.zoom);
-    } else if (map && userLocation && country === "all" && !selectedParish) {
-      // Set bounds to 5km radius around user location
+    } else if (country !== "all" && province !== "all") {
+      // Province/state selected
+      const selectedCountry = countryData[country as keyof typeof countryData];
+      const selectedProvince = selectedCountry?.provinces.find(p => p.name === province);
+      if (selectedProvince) {
+        map.panTo({ lat: selectedProvince.bounds.lat, lng: selectedProvince.bounds.lng });
+        map.setZoom(selectedProvince.bounds.zoom);
+      }
+    } else if (country !== "all") {
+      // Country selected
+      const selectedCountry = countryData[country as keyof typeof countryData];
+      if (selectedCountry) {
+        map.panTo({ lat: selectedCountry.bounds.lat, lng: selectedCountry.bounds.lng });
+        map.setZoom(selectedCountry.bounds.zoom);
+      }
+    } else if (userLocation && !selectedParish) {
+      // No filters, use user location with 5km radius
       const bounds = new google.maps.LatLngBounds();
       const offset = 0.045; // ~5km
       bounds.extend({
@@ -118,7 +148,7 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country }:
       });
       map.fitBounds(bounds);
     }
-  }, [map, selectedParish, country, userLocation]);
+  }, [map, selectedParish, country, province, userLocation]);
 
   const handleMarkerClick = (parish: Parish) => {
     setActiveMarker(parish.id);

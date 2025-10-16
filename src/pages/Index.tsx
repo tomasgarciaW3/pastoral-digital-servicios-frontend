@@ -66,6 +66,7 @@ const Index = () => {
           selectedParish={selectedParish}
           onParishSelect={setSelectedParish}
           country={filters.country}
+          province={filters.province}
         />
 
         {/* Filter Panel - Overlay on Map */}

@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from "@/components/ui/command";
-import { serviceTypes, provinces, countries } from "@/data/mockParishes";
+import { serviceTypes, countries, countryData, getProvincesForCountry } from "@/data/mockParishes";
 import { FilterState, Parish } from "@/types/parish";
 import { useState, useEffect } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -103,15 +103,16 @@ export const FilterPanel = ({ filters, onFilterChange, parishes }: FilterPanelPr
             <Select
               value={filters.province}
               onValueChange={(value) => onFilterChange({ ...filters, province: value })}
+              disabled={filters.country === "all"}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Seleccionar provincia" />
+                <SelectValue placeholder={filters.country === "all" ? "Seleccione un país primero" : "Seleccionar provincia/estado"} />
               </SelectTrigger>
               <SelectContent className="z-[1001]">
                 <SelectItem value="all">Todas</SelectItem>
-                {provinces.map((province) => (
-                  <SelectItem key={province} value={province}>
-                    {province}
+                {getProvincesForCountry(filters.country).map((province) => (
+                  <SelectItem key={province.name} value={province.name}>
+                    {province.name}
                   </SelectItem>
                 ))}
               </SelectContent>
