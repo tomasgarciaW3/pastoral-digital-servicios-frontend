@@ -11,21 +11,11 @@ export const Header = () => {
               <Church className="h-6 w-6 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-foreground">Parroquias Argentina</h1>
-              <p className="text-xs text-muted-foreground">Encontrá tu parroquia más cercana</p>
+              <h1 className="text-xl font-bold text-foreground">Pastoral digital - Encontrá tu parroquia</h1>
             </div>
           </div>
 
           <div className="hidden md:flex items-center gap-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder="Buscar parroquia..."
-                className="pl-10 pr-4 py-2 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring w-64"
-              />
-            </div>
-            
             <Button 
               className="bg-gradient-to-r from-primary to-accent hover:opacity-90 text-primary-foreground font-medium"
             >
