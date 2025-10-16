@@ -1,12 +1,10 @@
-import { Filter, MapPin, Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Filter, Search } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from "@/components/ui/command";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { serviceTypes, provinces, countries } from "@/data/mockParishes";
 import { FilterState, Parish } from "@/types/parish";
 import { useState } from "react";
@@ -50,74 +48,44 @@ export const FilterPanel = ({ filters, onFilterChange, parishes }: FilterPanelPr
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Ubicación */}
-        <div className="space-y-2">
+        <div className="space-y-3">
           <Label className="text-sm font-medium">Ubicación</Label>
           
-          <Tabs defaultValue="country" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="country">País</TabsTrigger>
-              <TabsTrigger value="province">Provincia</TabsTrigger>
-              <TabsTrigger value="city">Localidad</TabsTrigger>
-              <TabsTrigger value="nearme">Cerca mío</TabsTrigger>
-            </TabsList>
+          <div className="space-y-3">
+            <Select
+              value={filters.country}
+              onValueChange={(value) => onFilterChange({ ...filters, country: value, province: "all" })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Seleccionar país" />
+              </SelectTrigger>
+              <SelectContent className="z-[1001]">
+                <SelectItem value="all">Todos</SelectItem>
+                {countries.map((country) => (
+                  <SelectItem key={country} value={country}>
+                    {country}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             
-            <TabsContent value="country" className="mt-3">
-              <Select
-                value={filters.country}
-                onValueChange={(value) => onFilterChange({ ...filters, country: value, province: "all", city: "" })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar país" />
-                </SelectTrigger>
-                <SelectContent className="z-[1001]">
-                  <SelectItem value="all">Todos</SelectItem>
-                  {countries.map((country) => (
-                    <SelectItem key={country} value={country}>
-                      {country}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </TabsContent>
-            
-            <TabsContent value="province" className="mt-3">
-              <Select
-                value={filters.province}
-                onValueChange={(value) => onFilterChange({ ...filters, province: value, city: "" })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar provincia" />
-                </SelectTrigger>
-                <SelectContent className="z-[1001]">
-                  <SelectItem value="all">Todas</SelectItem>
-                  {provinces.map((province) => (
-                    <SelectItem key={province} value={province}>
-                      {province}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </TabsContent>
-            
-            <TabsContent value="city" className="mt-3">
-              <Input
-                placeholder="Buscar localidad"
-                value={filters.city}
-                onChange={(e) => onFilterChange({ ...filters, city: e.target.value })}
-              />
-            </TabsContent>
-            
-            <TabsContent value="nearme" className="mt-3">
-              <Button
-                variant={filters.nearMe ? "default" : "outline"}
-                className="w-full"
-                onClick={() => onFilterChange({ ...filters, nearMe: !filters.nearMe })}
-              >
-                <MapPin className="h-4 w-4 mr-2" />
-                {filters.nearMe ? "Activado" : "Activar ubicación"}
-              </Button>
-            </TabsContent>
-          </Tabs>
+            <Select
+              value={filters.province}
+              onValueChange={(value) => onFilterChange({ ...filters, province: value })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Seleccionar provincia" />
+              </SelectTrigger>
+              <SelectContent className="z-[1001]">
+                <SelectItem value="all">Todas</SelectItem>
+                {provinces.map((province) => (
+                  <SelectItem key={province} value={province}>
+                    {province}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         {/* Listado de parroquias */}
