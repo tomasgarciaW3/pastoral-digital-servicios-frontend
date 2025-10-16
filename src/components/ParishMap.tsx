@@ -184,42 +184,21 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, p
 
   const handleApiMarkerClick = async (marker: ParishMarker) => {
     setActiveMarker(marker.parishId);
-    
+
     // Find the corresponding parish from the parishes prop
     const correspondingParish = parishes.find(parish => parish.id === marker.parishId.toString());
-    
+
     if (correspondingParish) {
       // If we have the full parish data, use it
       onParishSelect(correspondingParish);
     } else {
-      // Try to fetch full parish details from the API
+      // Fetch full parish details from the API
       try {
         const parishDetails = await getParishDetails(marker.parishId);
-        
+
         if (parishDetails) {
-          // Convert ParishMarker to Parish format
-          const parishFromApi: Parish = {
-            id: parishDetails.parishId.toString(),
-            name: parishDetails.title,
-            address: parishDetails.location,
-            location: {
-              lat: parishDetails.coordinates.lat,
-              lng: parishDetails.coordinates.long
-            },
-            pastor: "Información no disponible",
-            contact: {
-              phone: "",
-              email: ""
-            },
-            country: "all", // Will be determined by geocoding
-            province: "all",
-            city: "",
-            services: [], // TODO: Convert serviceIds to full service objects
-            accessibility: {},
-            languages: []
-          };
-          
-          onParishSelect(parishFromApi);
+          // API now returns a complete Parish object
+          onParishSelect(parishDetails as Parish);
         } else {
           // Fallback: create a basic parish object from marker data
           const basicParish: Parish = {
@@ -235,19 +214,19 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, p
               phone: "",
               email: ""
             },
-            country: "all", // Will be determined by geocoding
+            country: "all",
             province: "all",
             city: "",
-            services: [], // Empty services array - will need to be fetched
+            services: [],
             accessibility: {},
             languages: []
           };
-          
+
           onParishSelect(basicParish);
         }
       } catch (error) {
         console.error("Error fetching parish details:", error);
-        
+
         // Fallback: create a basic parish object from marker data
         const basicParish: Parish = {
           id: marker.parishId.toString(),
@@ -262,14 +241,14 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, p
             phone: "",
             email: ""
           },
-          country: "all", // Will be determined by geocoding
+          country: "all",
           province: "all",
           city: "",
-          services: [], // Empty services array - will need to be fetched
+          services: [],
           accessibility: {},
           languages: []
         };
-        
+
         onParishSelect(basicParish);
       }
     }

@@ -235,7 +235,7 @@ export const searchParishes = async (query: string): Promise<ParishSearchRespons
  * @param parishId - The parish ID
  * @returns Promise with parish details
  */
-export const getParishDetails = async (parishId: number): Promise<ParishMarker | null> => {
+export const getParishDetails = async (parishId: number): Promise<any | null> => {
   // TODO: Replace with actual API call when backend is ready
   // const response = await fetch(`${API_BASE_URL}/public/parish/${parishId}`);
   // if (!response.ok) {
@@ -245,10 +245,78 @@ export const getParishDetails = async (parishId: number): Promise<ParishMarker |
 
   // Hardcoded mock response for now
   return new Promise((resolve) => {
-    setTimeout(() => {
-      const parish = mockMarkers.find(marker => marker.parishId === parishId);
-      resolve(parish || null);
-    }, 200); // Simulate network delay
+    const marker = mockMarkers.find(m => m.parishId === parishId);
+
+    if (!marker) {
+      resolve(null);
+      return;
+    }
+
+    // Convert marker to full Parish object with mock data
+    const serviceIdToType: Record<number, string> = {
+      1: "misa",
+      2: "confesiones",
+      3: "bautismo",
+      4: "matrimonio",
+      5: "catequesis",
+      6: "adoracion",
+      7: "caritas",
+      8: "retiros",
+    };
+
+    // Create services array with schedules
+    const services = marker.serviceIds.map(serviceId => ({
+      type: serviceIdToType[serviceId],
+      schedule: {
+        sunday: serviceId === 1 ? ["09:00", "11:00", "19:00"] : undefined,
+        monday: serviceId === 1 ? ["19:00"] : undefined,
+        tuesday: serviceId === 2 ? ["17:00-18:00"] : undefined,
+        wednesday: serviceId === 1 ? ["19:00"] : undefined,
+        thursday: serviceId === 2 ? ["17:00-18:00"] : undefined,
+        friday: serviceId === 1 ? ["19:00"] : undefined,
+        saturday: serviceId === 3 || serviceId === 4 ? ["10:00", "11:30"] : undefined,
+      }
+    }));
+
+    // Determine country name from countryId
+    const countryIdToName: Record<number, string> = {
+      1: "Argentina",
+      2: "Uruguay",
+      3: "Paraguay",
+      4: "Chile",
+      5: "República Dominicana",
+      6: "Perú",
+    };
+
+    const parishDetails = {
+      id: marker.parishId.toString(),
+      name: marker.title,
+      pastor: "Pbro. Juan Pérez",
+      address: marker.location,
+      country: countryIdToName[marker.countryId] || "Argentina",
+      province: "Capital",
+      city: marker.location.split(",")[0] || "",
+      location: {
+        lat: marker.coordinates.lat,
+        lng: marker.coordinates.long
+      },
+      contact: {
+        phone: "+54 11 4000-0000",
+        email: `contacto@${marker.title.toLowerCase().replace(/\s+/g, "")}.org`
+      },
+      services,
+      links: {
+        website: `https://${marker.title.toLowerCase().replace(/\s+/g, "")}.org`,
+      },
+      accessibility: {
+        ramp: true,
+        parking: true,
+        restroom: true,
+      },
+      languages: ["Español"],
+    };
+
+    resolve(parishDetails);
   });
 };
 
