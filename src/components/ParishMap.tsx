@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from "@react-google-maps/api";
 import { Parish } from "@/types/parish";
 import { countryData } from "@/data/mockParishes";
-import { getParishMarkers, ParishMarker } from "@/services/parishService";
+import { getParishMarkers, getParishDetails, ParishMarker } from "@/services/parishService";
 
 interface ParishMapProps {
   parishes: Parish[];
@@ -10,6 +10,7 @@ interface ParishMapProps {
   onParishSelect: (parish: Parish) => void;
   country: string;
   province: string;
+  services: string[];
 }
 
 const mapContainerStyle = {
@@ -25,7 +26,7 @@ const defaultCenter = {
 // Replace with your Google Maps API key
 const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "";
 
-export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, province }: ParishMapProps) => {
+export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, province, services }: ParishMapProps) => {
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [activeMarker, setActiveMarker] = useState<string | number | null>(null);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
@@ -181,9 +182,97 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, p
     onParishSelect(parish);
   };
 
-  const handleApiMarkerClick = (marker: ParishMarker) => {
+  const handleApiMarkerClick = async (marker: ParishMarker) => {
     setActiveMarker(marker.parishId);
-    // TODO: Fetch full parish details when needed
+    
+    // Find the corresponding parish from the parishes prop
+    const correspondingParish = parishes.find(parish => parish.id === marker.parishId.toString());
+    
+    if (correspondingParish) {
+      // If we have the full parish data, use it
+      onParishSelect(correspondingParish);
+    } else {
+      // Try to fetch full parish details from the API
+      try {
+        const parishDetails = await getParishDetails(marker.parishId);
+        
+        if (parishDetails) {
+          // Convert ParishMarker to Parish format
+          const parishFromApi: Parish = {
+            id: parishDetails.parishId.toString(),
+            name: parishDetails.title,
+            address: parishDetails.location,
+            location: {
+              lat: parishDetails.coordinates.lat,
+              lng: parishDetails.coordinates.long
+            },
+            pastor: "Información no disponible",
+            contact: {
+              phone: "",
+              email: ""
+            },
+            country: "all", // Will be determined by geocoding
+            province: "all",
+            city: "",
+            services: [], // TODO: Convert serviceIds to full service objects
+            accessibility: {},
+            languages: []
+          };
+          
+          onParishSelect(parishFromApi);
+        } else {
+          // Fallback: create a basic parish object from marker data
+          const basicParish: Parish = {
+            id: marker.parishId.toString(),
+            name: marker.title,
+            address: marker.location,
+            location: {
+              lat: marker.coordinates.lat,
+              lng: marker.coordinates.long
+            },
+            pastor: "Información no disponible",
+            contact: {
+              phone: "",
+              email: ""
+            },
+            country: "all", // Will be determined by geocoding
+            province: "all",
+            city: "",
+            services: [], // Empty services array - will need to be fetched
+            accessibility: {},
+            languages: []
+          };
+          
+          onParishSelect(basicParish);
+        }
+      } catch (error) {
+        console.error("Error fetching parish details:", error);
+        
+        // Fallback: create a basic parish object from marker data
+        const basicParish: Parish = {
+          id: marker.parishId.toString(),
+          name: marker.title,
+          address: marker.location,
+          location: {
+            lat: marker.coordinates.lat,
+            lng: marker.coordinates.long
+          },
+          pastor: "Información no disponible",
+          contact: {
+            phone: "",
+            email: ""
+          },
+          country: "all", // Will be determined by geocoding
+          province: "all",
+          city: "",
+          services: [], // Empty services array - will need to be fetched
+          accessibility: {},
+          languages: []
+        };
+        
+        onParishSelect(basicParish);
+      }
+    }
   };
 
   // Fetch markers when map bounds change - using ref to track bounds across renders
@@ -247,11 +336,45 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, p
         sw: { lat: sw.lat(), lng: sw.lng() }
       });
 
+      // Convert country name to ID
+      let countryId: number | undefined = undefined;
+      if (country !== "all") {
+        const COUNTRY_IDS: Record<string, number> = {
+          Argentina: 1,
+          Uruguay: 2,
+          Paraguay: 3,
+          Chile: 4,
+          "República Dominicana": 5,
+          Perú: 6,
+        };
+        countryId = COUNTRY_IDS[country];
+      }
+
+      // Convert service names to IDs
+      let serviceIds: number[] | undefined = undefined;
+      if (services.length > 0) {
+        const SERVICE_IDS: Record<string, number> = {
+          misa: 1,
+          confesiones: 2,
+          bautismo: 3,
+          matrimonio: 4,
+          catequesis: 5,
+          adoracion: 6,
+          caritas: 7,
+          retiros: 8,
+        };
+        serviceIds = services
+          .map((service) => SERVICE_IDS[service])
+          .filter((id) => id !== undefined);
+      }
+
       getParishMarkers({
         min_lat: sw.lat(),
         max_lat: ne.lat(),
         min_lon: sw.lng(),
         max_lon: ne.lng(),
+        countryId,
+        serviceIds,
       })
         .then((response) => {
           console.log("✅ Fetched markers:", response.markers.length);
@@ -263,7 +386,7 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, p
           console.error("❌ Error fetching markers:", error);
         });
     }, 1000); // Wait 1 second after bounds stop changing
-  }, [map]);
+  }, [map, country, services]);
 
   console.log("🔄 Component render - handleBoundsChanged callback reference:", handleBoundsChanged);
 

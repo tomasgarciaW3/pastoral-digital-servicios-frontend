@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { FilterPanel } from "@/components/FilterPanel";
 import { ParishMap } from "@/components/ParishMap";
@@ -7,6 +7,7 @@ import { ScheduleModal } from "@/components/ScheduleModal";
 import { Chatbot } from "@/components/Chatbot";
 import { mockParishes } from "@/data/mockParishes";
 import { Parish, FilterState } from "@/types/parish";
+import { reverseGeocode } from "@/services/geocodingService";
 
 const Index = () => {
   const [selectedParish, setSelectedParish] = useState<Parish | null>(null);
@@ -23,6 +24,29 @@ const Index = () => {
     language: "",
     nearMe: false,
   });
+
+  // Auto-detect country and province from user location
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          const location = reverseGeocode(latitude, longitude);
+
+          if (location) {
+            setFilters((prev) => ({
+              ...prev,
+              country: location.country,
+              province: location.province,
+            }));
+          }
+        },
+        (error) => {
+          console.log("Could not get user location:", error.message);
+        }
+      );
+    }
+  }, []);
 
   const filteredParishes = useMemo(() => {
     return mockParishes.filter((parish) => {
@@ -67,6 +91,7 @@ const Index = () => {
           onParishSelect={setSelectedParish}
           country={filters.country}
           province={filters.province}
+          services={filters.services}
         />
 
         {/* Filter Panel - Overlay on Map */}
