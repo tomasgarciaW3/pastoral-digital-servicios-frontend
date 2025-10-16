@@ -1,4 +1,3 @@
-import { Church, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const Header = () => {
@@ -7,9 +6,7 @@ export const Header = () => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="bg-primary p-2 rounded-lg">
-              <Church className="h-6 w-6 text-primary-foreground" />
-            </div>
+            <img src="/favicon.png" alt="Logo" className="h-10 w-10" />
             <div>
               <h1 className="text-xl font-bold text-foreground">Pastoral digital - Encontrá tu parroquia</h1>
             </div>

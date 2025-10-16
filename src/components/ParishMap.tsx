@@ -37,6 +37,14 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, p
     googleMapsApiKey: GOOGLE_MAPS_API_KEY,
   });
 
+  // Custom marker icon - only create after Google Maps is loaded
+  const customIcon = isLoaded ? {
+    url: "/marker.png",
+    scaledSize: new google.maps.Size(37.5, 52.5), // Pin shape: 25% smaller
+    origin: new google.maps.Point(0, 0),
+    anchor: new google.maps.Point(18.75, 52.5), // Anchor at the tip of the pin (bottom center)
+  } : undefined;
+
   // Request user's location on mount
   useEffect(() => {
     if (navigator.geolocation) {
@@ -318,7 +326,6 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, p
           keyboardShortcuts: false,
           panControl: false,
           disableDefaultUI: true,
-          zoomControl: true,
         }}
       >
         {/* Legacy parish markers (if any) */}
@@ -327,6 +334,7 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, p
             key={`parish-${parish.id}`}
             position={{ lat: parish.location.lat, lng: parish.location.lng }}
             onClick={() => handleMarkerClick(parish)}
+            icon={customIcon}
           >
             {activeMarker === parish.id && (
               <InfoWindow onCloseClick={() => setActiveMarker(null)}>
@@ -345,6 +353,7 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, p
             key={`marker-${marker.parishId}`}
             position={{ lat: marker.coordinates.lat, lng: marker.coordinates.long }}
             onClick={() => handleApiMarkerClick(marker)}
+            icon={customIcon}
           >
             {activeMarker === marker.parishId && (
               <InfoWindow onCloseClick={() => setActiveMarker(null)}>

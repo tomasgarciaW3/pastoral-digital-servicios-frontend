@@ -224,19 +224,17 @@ export const getParishMarkers = async (bounds: BoundsParams): Promise<ParishMark
 
   // Hardcoded mock response for now
   return new Promise((resolve) => {
-    setTimeout(() => {
-      // Filter markers within the specified bounds
-      const filteredMarkers = mockMarkers.filter(
-        (marker) =>
-          marker.coordinates.lat >= bounds.min_lat &&
-          marker.coordinates.lat <= bounds.max_lat &&
-          marker.coordinates.long >= bounds.min_lon &&
-          marker.coordinates.long <= bounds.max_lon
-      );
+    // Filter markers within the specified bounds
+    const filteredMarkers = mockMarkers.filter(
+      (marker) =>
+        marker.coordinates.lat >= bounds.min_lat &&
+        marker.coordinates.lat <= bounds.max_lat &&
+        marker.coordinates.long >= bounds.min_lon &&
+        marker.coordinates.long <= bounds.max_lon
+    );
 
-      resolve({
-        markers: filteredMarkers,
-      });
-    }, 200); // Simulate network delay
+    resolve({
+      markers: filteredMarkers,
+    });
   });
 };
