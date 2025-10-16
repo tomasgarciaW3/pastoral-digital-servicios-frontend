@@ -33,19 +33,38 @@ const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "";
 export const ParishMap = ({ parishes, selectedParish, onParishSelect, country }: ParishMapProps) => {
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [activeMarker, setActiveMarker] = useState<string | null>(null);
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
 
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: GOOGLE_MAPS_API_KEY,
   });
 
+  // Request user's location on mount
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+        },
+        (error) => {
+          console.log("Geolocation error:", error.message);
+          // Use default location if user denies or error occurs
+        }
+      );
+    }
+  }, []);
+
   const center = selectedParish
     ? { lat: selectedParish.location.lat, lng: selectedParish.location.lng }
     : country !== "all" && countryBounds[country]
     ? countryBounds[country]
-    : defaultCenter;
+    : userLocation || defaultCenter;
 
-  const zoom = selectedParish ? 14 : country !== "all" && countryBounds[country] ? countryBounds[country].zoom : 6;
+  const zoom = selectedParish ? 14 : country !== "all" && countryBounds[country] ? countryBounds[country].zoom : userLocation ? 12 : 6;
 
   const onLoad = useCallback((map: google.maps.Map) => {
     setMap(map);
@@ -55,7 +74,23 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country }:
         position: google.maps.ControlPosition.LEFT_BOTTOM,
       },
     });
-  }, []);
+
+    // Set bounds to 5km radius if user location is available
+    if (userLocation && !selectedParish && country === "all") {
+      const bounds = new google.maps.LatLngBounds();
+      // Calculate 5km bounding box (approximately 0.045 degrees latitude/longitude)
+      const offset = 0.045; // ~5km
+      bounds.extend({
+        lat: userLocation.lat + offset,
+        lng: userLocation.lng + offset,
+      });
+      bounds.extend({
+        lat: userLocation.lat - offset,
+        lng: userLocation.lng - offset,
+      });
+      map.fitBounds(bounds);
+    }
+  }, [userLocation, selectedParish, country]);
 
   const onUnmount = useCallback(() => {
     setMap(null);
@@ -69,8 +104,21 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country }:
       const bounds = countryBounds[country];
       map.panTo({ lat: bounds.lat, lng: bounds.lng });
       map.setZoom(bounds.zoom);
+    } else if (map && userLocation && country === "all" && !selectedParish) {
+      // Set bounds to 5km radius around user location
+      const bounds = new google.maps.LatLngBounds();
+      const offset = 0.045; // ~5km
+      bounds.extend({
+        lat: userLocation.lat + offset,
+        lng: userLocation.lng + offset,
+      });
+      bounds.extend({
+        lat: userLocation.lat - offset,
+        lng: userLocation.lng - offset,
+      });
+      map.fitBounds(bounds);
     }
-  }, [map, selectedParish, country]);
+  }, [map, selectedParish, country, userLocation]);
 
   const handleMarkerClick = (parish: Parish) => {
     setActiveMarker(parish.id);
