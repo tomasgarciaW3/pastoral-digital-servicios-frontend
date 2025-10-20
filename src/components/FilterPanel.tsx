@@ -33,7 +33,7 @@ export const FilterPanel = ({ filters, onFilterChange, parishes }: FilterPanelPr
     onFilterChange({ ...filters, services: newServices });
   };
 
-  const handleParishToggle = (parishId: string) => {
+  const handleParishToggle = (parishId: number) => {
     const newParishes = filters.selectedParishes.includes(parishId)
       ? filters.selectedParishes.filter((p) => p !== parishId)
       : [...filters.selectedParishes, parishId];
@@ -178,14 +178,14 @@ export const FilterPanel = ({ filters, onFilterChange, parishes }: FilterPanelPr
                     <CommandGroup>
                       {searchResults.map((parish) => (
                         <CommandItem
-                          key={parish.id}
+                          key={parish.parishId}
                           onSelect={() => {
-                            handleParishToggle(parish.id.toString());
+                            handleParishToggle(parish.parishId);
                           }}
                           className="flex items-start gap-2"
                         >
                           <Checkbox
-                            checked={filters.selectedParishes.includes(parish.id.toString())}
+                            checked={filters.selectedParishes.includes(parish.parishId)}
                             className="mt-1"
                           />
                           <div className="flex-1">

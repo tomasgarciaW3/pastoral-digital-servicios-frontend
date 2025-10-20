@@ -67,7 +67,7 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, p
   // Get bounding box based on selected filters
   const getLocationBounds = () => {
     if (selectedParish) {
-      return { lat: selectedParish.location.lat, lng: selectedParish.location.lng, zoom: 14 };
+      return { lat: selectedParish.coordinates.lat, lng: selectedParish.coordinates.lng, zoom: 14 };
     }
 
     // Check for province/state selection
@@ -100,7 +100,6 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, p
   const [hasInitialized, setHasInitialized] = useState(false);
 
   const onLoad = useCallback((map: google.maps.Map) => {
-    console.log("🗺️ Map onLoad called - setting initial position");
     setMap(map);
 
     // Set initial center and zoom programmatically
@@ -115,7 +114,6 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, p
     });
 
     setHasInitialized(true);
-    console.log("✅ Map initialized with center:", initialBounds);
   }, [initialBounds]);
 
   const onUnmount = useCallback(() => {
@@ -123,9 +121,7 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, p
   }, []);
 
   useEffect(() => {
-    console.log("🗺️ Map pan useEffect triggered");
     if (!map) {
-      console.log("❌ No map instance yet");
       return;
     }
 
@@ -138,28 +134,18 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, p
       previousFilters.province !== currentFilters.province ||
       previousFilters.parishId !== currentFilters.parishId;
 
-    console.log("📊 Filter comparison:", {
-      previous: previousFilters,
-      current: currentFilters,
-      changed: filtersChanged
-    });
-
     if (!filtersChanged) {
-      console.log("✅ Filters haven't changed - skipping pan");
       return;
     }
 
     // Update previous filters ref
     previousFiltersRef.current = currentFilters;
-    console.log("🔄 Filters changed - panning map");
 
     if (selectedParish) {
-      console.log("📍 Panning to selected parish:", selectedParish.name);
-      map.panTo({ lat: selectedParish.location.lat, lng: selectedParish.location.lng });
+      map.panTo({ lat: selectedParish.coordinates.lat, lng: selectedParish.coordinates.lng });
       map.setZoom(14);
     } else if (country !== "all" && province !== "all") {
       // Province/state selected
-      console.log("🏛️ Panning to province:", province);
       const selectedCountry = countryData[country as keyof typeof countryData];
       const selectedProvince = selectedCountry?.provinces.find(p => p.name === province);
       if (selectedProvince) {
@@ -168,7 +154,6 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, p
       }
     } else if (country !== "all") {
       // Country selected
-      console.log("🌍 Panning to country:", country);
       const selectedCountry = countryData[country as keyof typeof countryData];
       if (selectedCountry) {
         map.panTo({ lat: selectedCountry.bounds.lat, lng: selectedCountry.bounds.lng });
@@ -186,7 +171,7 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, p
     setActiveMarker(marker.parishId);
 
     // Find the corresponding parish from the parishes prop
-    const correspondingParish = parishes.find(parish => parish.id === marker.parishId.toString());
+    const correspondingParish = parishes.find(parish => parish.id === marker.parishId);
 
     if (correspondingParish) {
       // If we have the full parish data, use it
@@ -202,24 +187,20 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, p
         } else {
           // Fallback: create a basic parish object from marker data
           const basicParish: Parish = {
-            id: marker.parishId.toString(),
+            id: marker.parishId,
             name: marker.title,
             address: marker.location,
-            location: {
+            coordinates: {
               lat: marker.coordinates.lat,
               lng: marker.coordinates.long
             },
-            pastor: "Información no disponible",
-            contact: {
-              phone: "",
-              email: ""
-            },
+            priest: "Información no disponible",
+            phone: "",
+            email: "",
             country: "all",
             province: "all",
             city: "",
-            services: [],
-            accessibility: {},
-            languages: []
+            services: []
           };
 
           onParishSelect(basicParish);
@@ -229,24 +210,20 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, p
 
         // Fallback: create a basic parish object from marker data
         const basicParish: Parish = {
-          id: marker.parishId.toString(),
+          id: marker.parishId,
           name: marker.title,
           address: marker.location,
-          location: {
+          coordinates: {
             lat: marker.coordinates.lat,
             lng: marker.coordinates.long
           },
-          pastor: "Información no disponible",
-          contact: {
-            phone: "",
-            email: ""
-          },
+          priest: "Información no disponible",
+          phone: "",
+          email: "",
           country: "all",
           province: "all",
           city: "",
-          services: [],
-          accessibility: {},
-          languages: []
+          services: []
         };
 
         onParishSelect(basicParish);
@@ -259,12 +236,10 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, p
   const fetchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleBoundsChanged = useCallback(() => {
-    console.log("🔄 Bounds changed callback called - map exists:", !!map);
     if (!map) return;
 
     const currentBounds = map.getBounds();
     if (!currentBounds) {
-      console.log("❌ No bounds available yet");
       return;
     }
 
@@ -272,24 +247,18 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, p
     const sw = currentBounds.getSouthWest();
     const boundsKey = `${sw.lat().toFixed(4)},${sw.lng().toFixed(4)},${ne.lat().toFixed(4)},${ne.lng().toFixed(4)}`;
 
-    console.log("📍 Current bounds key:", boundsKey);
-    console.log("📍 Last bounds key:", lastBoundsRef.current);
 
     // Clear existing timeout
     if (fetchTimeoutRef.current) {
-      console.log("⏱️ Clearing existing timeout");
       clearTimeout(fetchTimeoutRef.current);
     }
 
-    console.log("⏰ Scheduling fetch in 1 second...");
 
     // Schedule fetch after debounce
     fetchTimeoutRef.current = setTimeout(() => {
-      console.log("🎬 Debounce completed - executing fetch");
 
       const bounds = map.getBounds();
       if (!bounds) {
-        console.log("❌ Bounds disappeared during debounce");
         return;
       }
 
@@ -299,21 +268,13 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, p
       // Create a string representation of bounds to detect actual changes
       const boundsKey = `${sw.lat().toFixed(4)},${sw.lng().toFixed(4)},${ne.lat().toFixed(4)},${ne.lng().toFixed(4)}`;
 
-      console.log("🔎 Checking bounds - Current:", boundsKey, "Last:", lastBoundsRef.current);
 
       // Skip if bounds haven't actually changed (within 4 decimal places)
       if (boundsKey === lastBoundsRef.current) {
-        console.log("⏭️ Bounds unchanged, skipping fetch");
         return;
       }
 
       lastBoundsRef.current = boundsKey;
-
-      console.log("🔍 Fetching markers for new bounds");
-      console.log("📦 Bounds:", {
-        ne: { lat: ne.lat(), lng: ne.lng() },
-        sw: { lat: sw.lat(), lng: sw.lng() }
-      });
 
       // Convert country name to ID
       let countryId: number | undefined = undefined;
@@ -329,37 +290,15 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, p
         countryId = COUNTRY_IDS[country];
       }
 
-      // Convert service names to IDs
-      let serviceIds: number[] | undefined = undefined;
-      if (services.length > 0) {
-        const SERVICE_IDS: Record<string, number> = {
-          misa: 1,
-          confesiones: 2,
-          bautismo: 3,
-          matrimonio: 4,
-          catequesis: 5,
-          adoracion: 6,
-          caritas: 7,
-          retiros: 8,
-        };
-        serviceIds = services
-          .map((service) => SERVICE_IDS[service])
-          .filter((id) => id !== undefined);
-      }
-
       getParishMarkers({
         min_lat: sw.lat(),
         max_lat: ne.lat(),
         min_lon: sw.lng(),
         max_lon: ne.lng(),
         countryId,
-        serviceIds,
       })
         .then((response) => {
-          console.log("✅ Fetched markers:", response.markers.length);
-          console.log("🎨 Calling setMarkers - this might trigger re-render");
           setMarkers(response.markers);
-          console.log("✨ setMarkers completed");
         })
         .catch((error) => {
           console.error("❌ Error fetching markers:", error);
@@ -367,40 +306,27 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, p
     }, 1000); // Wait 1 second after bounds stop changing
   }, [map, country, services]);
 
-  console.log("🔄 Component render - handleBoundsChanged callback reference:", handleBoundsChanged);
 
   // Set up bounds listener only once
   useEffect(() => {
-    console.log("🎯 useEffect for bounds listener triggered - map exists:", !!map);
-    console.log("🎯 handleBoundsChanged reference:", handleBoundsChanged);
 
     if (!map) {
-      console.log("⚠️ No map yet, skipping listener setup");
       return;
     }
 
-    console.log("✅ Setting up bounds_changed listener NOW");
     const listener = map.addListener("bounds_changed", handleBoundsChanged);
-    console.log("✅ Listener attached:", listener);
 
     // Initial fetch after a short delay
-    console.log("⏰ Scheduling initial fetch in 500ms");
     const initialTimeout = setTimeout(() => {
-      console.log("🚀 Executing initial marker fetch");
       handleBoundsChanged();
     }, 500);
 
     return () => {
-      console.log("🧹 ===== CLEANUP FUNCTION CALLED =====");
       if (fetchTimeoutRef.current) {
-        console.log("🧹 Clearing fetch timeout");
         clearTimeout(fetchTimeoutRef.current);
       }
-      console.log("🧹 Clearing initial timeout");
       clearTimeout(initialTimeout);
-      console.log("🧹 Removing bounds_changed listener");
       google.maps.event.removeListener(listener);
-      console.log("🧹 ===== CLEANUP COMPLETE =====");
     };
   }, [map, handleBoundsChanged]);
 
@@ -434,7 +360,7 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, p
         {parishes.map((parish) => (
           <Marker
             key={`parish-${parish.id}`}
-            position={{ lat: parish.location.lat, lng: parish.location.lng }}
+            position={{ lat: parish.coordinates.lat, lng: parish.coordinates.lng }}
             onClick={() => handleMarkerClick(parish)}
             icon={customIcon}
           >

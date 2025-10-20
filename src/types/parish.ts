@@ -1,58 +1,44 @@
-export interface ParishSchedule {
-  sunday?: string[];
-  monday?: string[];
-  tuesday?: string[];
-  wednesday?: string[];
-  thursday?: string[];
-  friday?: string[];
-  saturday?: string[];
+export interface ServiceTime {
+  startTime: string; // UTC format
+  endTime: string;   // UTC format
+}
+
+export interface ServiceDay {
+  name: string; // e.g., "monday", "tuesday", "saturday", "sunday"
+  times?: ServiceTime[]; // Optional times array
 }
 
 export interface ParishService {
-  type: 'misa' | 'bautismo' | 'confesiones' | 'catequesis' | 'caritas' | 'retiros' | 'matrimonio';
-  schedule: ParishSchedule;
+  id: number;
+  name: string;
+  days: ServiceDay[];
 }
 
 export interface Parish {
-  id: string;
+  id: number;
   name: string;
-  pastor: string;
+  priest: string;
   address: string;
   country: string;
   province: string;
   city: string;
-  location: {
+  coordinates: {
     lat: number;
     lng: number;
   };
-  contact: {
-    phone: string;
-    email: string;
-  };
+  phone: string;
+  email: string;
+  website?: string;
   services: ParishService[];
-  links?: {
-    website?: string;
-    facebook?: string;
-    instagram?: string;
-  };
-  photos?: string[];
-  accessibility?: {
-    ramp?: boolean;
-    parking?: boolean;
-    restroom?: boolean;
-  };
-  languages?: string[];
 }
 
 export interface FilterState {
   search: string;
-  selectedParishes: string[];
+  selectedParishes: number[];
   services: string[];
   country: string;
   province: string;
   city: string;
   dayTime: string;
-  accessibility: string[];
-  language: string;
   nearMe: boolean;
 }

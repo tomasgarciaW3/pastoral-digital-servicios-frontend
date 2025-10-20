@@ -20,10 +20,9 @@ const Index = () => {
     province: "all",
     city: "",
     dayTime: "all",
-    accessibility: [],
-    language: "",
     nearMe: false,
   });
+
 
   // Auto-detect country and province from user location
   useEffect(() => {
@@ -58,7 +57,8 @@ const Index = () => {
       // Filter by services
       if (filters.services.length > 0) {
         const hasService = filters.services.some((serviceFilter) =>
-          parish.services.some((s) => s.type === serviceFilter)
+          parish.services.some((s) => s.name.toLowerCase() === serviceFilter.toLowerCase() ||
+                                     s.name.toLowerCase().includes(serviceFilter.toLowerCase()))
         );
         if (!hasService) return false;
       }
@@ -101,7 +101,7 @@ const Index = () => {
 
         {/* Detail Section - Overlay on Map */}
         {selectedParish && (
-          <div className="absolute top-4 right-4 w-96 max-h-[calc(100%-2rem)] bg-card border border-border rounded-lg shadow-lg overflow-hidden z-[1000]">
+          <div className="absolute top-4 right-4 w-96 h-[calc(100%-2rem)] bg-card border border-border rounded-lg shadow-lg z-[1000] flex flex-col">
             <ParishDetail
               parish={selectedParish}
               onSchedule={() => setScheduleModalOpen(true)}
