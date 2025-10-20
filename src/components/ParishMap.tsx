@@ -354,6 +354,7 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, p
           keyboardShortcuts: false,
           panControl: false,
           disableDefaultUI: true,
+          clickableIcons: false,
         }}
       >
         {/* Legacy parish markers (if any) */}
