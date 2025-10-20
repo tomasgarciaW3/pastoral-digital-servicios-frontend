@@ -38,7 +38,7 @@ export const ParishDetail = ({ parish, onSchedule, onClose }: ParishDetailProps)
   }
 
   return (
-    <div className="h-full overflow-y-auto p-6 space-y-6 animate-fade-in relative">
+    <div className="flex-1 overflow-y-auto p-6 space-y-6 animate-fade-in relative scrollbar-thin">
       <Button
         variant="ghost"
         size="icon"
