@@ -25,6 +25,7 @@ export interface ParishMarker {
   title: string;
   location: string;
   countryId: number;
+  hasSubscription: boolean;
 }
 
 export interface ParishMarkersResponse {
@@ -64,115 +65,115 @@ export const SERVICE_IDS = {
 // Mock marker data - comprehensive list with at least 2 markers per state/province
 const mockMarkers: ParishMarker[] = [
   // Argentina - Buenos Aires (countryId: 1)
-  { parishId: 1, coordinates: { lat: -34.6037, long: -58.3816 }, title: "Catedral Metropolitana", location: "San Martín 27, CABA", countryId: 1 },
-  { parishId: 2, coordinates: { lat: -34.6158, long: -58.3701 }, title: "Basílica de Santo Domingo", location: "Defensa 422, San Telmo, CABA", countryId: 1 },
-  { parishId: 3, coordinates: { lat: -34.5708, long: -59.1156 }, title: "Basílica de Luján", location: "San Martín 51, Luján", countryId: 1 },
-  { parishId: 4, coordinates: { lat: -34.7281, long: -58.2617 }, title: "Parroquia San José", location: "Av. Mitre 2650, Avellaneda", countryId: 1 },
+  { parishId: 1, coordinates: { lat: -34.6037, long: -58.3816 }, title: "Catedral Metropolitana", location: "San Martín 27, CABA", countryId: 1, hasSubscription: true },
+  { parishId: 2, coordinates: { lat: -34.6158, long: -58.3701 }, title: "Basílica de Santo Domingo", location: "Defensa 422, San Telmo, CABA", countryId: 1, hasSubscription: false },
+  { parishId: 3, coordinates: { lat: -34.5708, long: -59.1156 }, title: "Basílica de Luján", location: "San Martín 51, Luján", countryId: 1, hasSubscription: false },
+  { parishId: 4, coordinates: { lat: -34.7281, long: -58.2617 }, title: "Parroquia San José", location: "Av. Mitre 2650, Avellaneda", countryId: 1, hasSubscription: false },
 
   // Argentina - Córdoba (countryId: 1)
-  { parishId: 5, coordinates: { lat: -31.4201, long: -64.1888 }, title: "Catedral de Córdoba", location: "Independencia 80, Córdoba", countryId: 1 },
-  { parishId: 6, coordinates: { lat: -31.3953, long: -64.2619 }, title: "Parroquia del Sagrado Corazón", location: "Humberto Primo 600, Córdoba", countryId: 1 },
+  { parishId: 5, coordinates: { lat: -31.4201, long: -64.1888 }, title: "Catedral de Córdoba", location: "Independencia 80, Córdoba", countryId: 1, hasSubscription: true },
+  { parishId: 6, coordinates: { lat: -31.3953, long: -64.2619 }, title: "Parroquia del Sagrado Corazón", location: "Humberto Primo 600, Córdoba", countryId: 1, hasSubscription: false },
 
   // Argentina - Santa Fe (countryId: 1)
-  { parishId: 7, coordinates: { lat: -32.9442, long: -60.6505 }, title: "Catedral de Rosario", location: "Buenos Aires 339, Rosario", countryId: 1 },
-  { parishId: 8, coordinates: { lat: -31.6107, long: -60.6973 }, title: "Catedral de Santa Fe", location: "San Martín 2802, Santa Fe", countryId: 1 },
+  { parishId: 7, coordinates: { lat: -32.9442, long: -60.6505 }, title: "Catedral de Rosario", location: "Buenos Aires 339, Rosario", countryId: 1, hasSubscription: false },
+  { parishId: 8, coordinates: { lat: -31.6107, long: -60.6973 }, title: "Catedral de Santa Fe", location: "San Martín 2802, Santa Fe", countryId: 1, hasSubscription: false },
 
   // Argentina - Mendoza (countryId: 1)
-  { parishId: 9, coordinates: { lat: -32.8895, long: -68.8458 }, title: "Parroquia Cristo Rey", location: "Las Heras 567, Mendoza", countryId: 1 },
-  { parishId: 10, coordinates: { lat: -32.9042, long: -68.8272 }, title: "Basílica San Francisco", location: "Ituzaingó 297, Mendoza", countryId: 1 },
+  { parishId: 9, coordinates: { lat: -32.8895, long: -68.8458 }, title: "Parroquia Cristo Rey", location: "Las Heras 567, Mendoza", countryId: 1, hasSubscription: false },
+  { parishId: 10, coordinates: { lat: -32.9042, long: -68.8272 }, title: "Basílica San Francisco", location: "Ituzaingó 297, Mendoza", countryId: 1, hasSubscription: false },
 
   // Argentina - Tucumán (countryId: 1)
-  { parishId: 11, coordinates: { lat: -26.8083, long: -65.2176 }, title: "Catedral de Tucumán", location: "Congreso 71, San Miguel de Tucumán", countryId: 1 },
-  { parishId: 12, coordinates: { lat: -26.8241, long: -65.2226 }, title: "Parroquia San Francisco", location: "25 de Mayo 258, Tucumán", countryId: 1 },
+  { parishId: 11, coordinates: { lat: -26.8083, long: -65.2176 }, title: "Catedral de Tucumán", location: "Congreso 71, San Miguel de Tucumán", countryId: 1, hasSubscription: false },
+  { parishId: 12, coordinates: { lat: -26.8241, long: -65.2226 }, title: "Parroquia San Francisco", location: "25 de Mayo 258, Tucumán", countryId: 1, hasSubscription: false },
 
   // Argentina - Salta (countryId: 1)
-  { parishId: 13, coordinates: { lat: -24.7859, long: -65.4117 }, title: "Catedral de Salta", location: "España 596, Salta", countryId: 1 },
-  { parishId: 14, coordinates: { lat: -24.7895, long: -65.4103 }, title: "Iglesia San Francisco", location: "Caseros 187, Salta", countryId: 1 },
+  { parishId: 13, coordinates: { lat: -24.7859, long: -65.4117 }, title: "Catedral de Salta", location: "España 596, Salta", countryId: 1, hasSubscription: false },
+  { parishId: 14, coordinates: { lat: -24.7895, long: -65.4103 }, title: "Iglesia San Francisco", location: "Caseros 187, Salta", countryId: 1, hasSubscription: false },
 
   // Uruguay - Montevideo (countryId: 2)
-  { parishId: 15, coordinates: { lat: -34.9011, long: -56.1645 }, title: "Catedral Metropolitana", location: "Sarandí 487, Montevideo", countryId: 2 },
-  { parishId: 16, coordinates: { lat: -34.9042, long: -56.1881 }, title: "Iglesia del Sagrado Corazón", location: "18 de Julio 1645, Montevideo", countryId: 2 },
+  { parishId: 15, coordinates: { lat: -34.9011, long: -56.1645 }, title: "Catedral Metropolitana", location: "Sarandí 487, Montevideo", countryId: 2, hasSubscription: false },
+  { parishId: 16, coordinates: { lat: -34.9042, long: -56.1881 }, title: "Iglesia del Sagrado Corazón", location: "18 de Julio 1645, Montevideo", countryId: 2, hasSubscription: false },
 
   // Uruguay - Canelones (countryId: 2)
-  { parishId: 17, coordinates: { lat: -34.5228, long: -55.9317 }, title: "Parroquia Santa Rosa", location: "Artigas 1234, Canelones", countryId: 2 },
-  { parishId: 18, coordinates: { lat: -34.7500, long: -56.0167 }, title: "Parroquia San Luis", location: "Ruta 5 km 23, Canelones", countryId: 2 },
+  { parishId: 17, coordinates: { lat: -34.5228, long: -55.9317 }, title: "Parroquia Santa Rosa", location: "Artigas 1234, Canelones", countryId: 2, hasSubscription: false },
+  { parishId: 18, coordinates: { lat: -34.7500, long: -56.0167 }, title: "Parroquia San Luis", location: "Ruta 5 km 23, Canelones", countryId: 2, hasSubscription: false },
 
   // Uruguay - Maldonado (countryId: 2)
-  { parishId: 19, coordinates: { lat: -34.9000, long: -54.9500 }, title: "Catedral de Maldonado", location: "Sarandí 701, Maldonado", countryId: 2 },
-  { parishId: 20, coordinates: { lat: -34.9667, long: -54.9500 }, title: "Iglesia de Punta del Este", location: "Av. Gorlero 890, Punta del Este", countryId: 2 },
+  { parishId: 19, coordinates: { lat: -34.9000, long: -54.9500 }, title: "Catedral de Maldonado", location: "Sarandí 701, Maldonado", countryId: 2, hasSubscription: false },
+  { parishId: 20, coordinates: { lat: -34.9667, long: -54.9500 }, title: "Iglesia de Punta del Este", location: "Av. Gorlero 890, Punta del Este", countryId: 2, hasSubscription: false },
 
   // Paraguay - Asunción (countryId: 3)
-  { parishId: 21, coordinates: { lat: -25.2637, long: -57.5759 }, title: "Catedral Metropolitana", location: "Palma 382, Asunción", countryId: 3 },
-  { parishId: 22, coordinates: { lat: -25.2824, long: -57.5572 }, title: "Parroquia Santa Lucía", location: "Av. Santísima Trinidad, Asunción", countryId: 3 },
+  { parishId: 21, coordinates: { lat: -25.2637, long: -57.5759 }, title: "Catedral Metropolitana", location: "Palma 382, Asunción", countryId: 3, hasSubscription: false },
+  { parishId: 22, coordinates: { lat: -25.2824, long: -57.5572 }, title: "Parroquia Santa Lucía", location: "Av. Santísima Trinidad, Asunción", countryId: 3, hasSubscription: false },
 
   // Paraguay - Central (countryId: 3)
-  { parishId: 23, coordinates: { lat: -25.3667, long: -57.5167 }, title: "Parroquia San Lorenzo", location: "General Santos, San Lorenzo", countryId: 3 },
-  { parishId: 24, coordinates: { lat: -25.2900, long: -57.6400 }, title: "Parroquia Luque", location: "14 de Mayo, Luque", countryId: 3 },
+  { parishId: 23, coordinates: { lat: -25.3667, long: -57.5167 }, title: "Parroquia San Lorenzo", location: "General Santos, San Lorenzo", countryId: 3, hasSubscription: false },
+  { parishId: 24, coordinates: { lat: -25.2900, long: -57.6400 }, title: "Parroquia Luque", location: "14 de Mayo, Luque", countryId: 3, hasSubscription: false },
 
   // Chile - Región Metropolitana (countryId: 4)
-  { parishId: 25, coordinates: { lat: -33.4489, long: -70.6693 }, title: "Catedral Metropolitana", location: "Plaza de Armas, Santiago", countryId: 4 },
-  { parishId: 26, coordinates: { lat: -33.4372, long: -70.6506 }, title: "Iglesia San Francisco", location: "Londres 4, Santiago", countryId: 4 },
+  { parishId: 25, coordinates: { lat: -33.4489, long: -70.6693 }, title: "Catedral Metropolitana", location: "Plaza de Armas, Santiago", countryId: 4, hasSubscription: false },
+  { parishId: 26, coordinates: { lat: -33.4372, long: -70.6506 }, title: "Iglesia San Francisco", location: "Londres 4, Santiago", countryId: 4, hasSubscription: false },
 
   // Chile - Valparaíso (countryId: 4)
-  { parishId: 27, coordinates: { lat: -33.0472, long: -71.6127 }, title: "Catedral de Valparaíso", location: "Condell 1396, Valparaíso", countryId: 4 },
-  { parishId: 28, coordinates: { lat: -33.0367, long: -71.6276 }, title: "Iglesia La Matriz", location: "Plaza Echaurren, Valparaíso", countryId: 4 },
+  { parishId: 27, coordinates: { lat: -33.0472, long: -71.6127 }, title: "Catedral de Valparaíso", location: "Condell 1396, Valparaíso", countryId: 4, hasSubscription: false },
+  { parishId: 28, coordinates: { lat: -33.0367, long: -71.6276 }, title: "Iglesia La Matriz", location: "Plaza Echaurren, Valparaíso", countryId: 4, hasSubscription: false },
 
   // Chile - Concepción (Biobío) (countryId: 4)
-  { parishId: 29, coordinates: { lat: -36.8270, long: -73.0498 }, title: "Catedral de Concepción", location: "Caupolicán 441, Concepción", countryId: 4 },
-  { parishId: 30, coordinates: { lat: -36.8201, long: -73.0444 }, title: "Parroquia del Sagrario", location: "O'Higgins 570, Concepción", countryId: 4 },
+  { parishId: 29, coordinates: { lat: -36.8270, long: -73.0498 }, title: "Catedral de Concepción", location: "Caupolicán 441, Concepción", countryId: 4, hasSubscription: false },
+  { parishId: 30, coordinates: { lat: -36.8201, long: -73.0444 }, title: "Parroquia del Sagrario", location: "O'Higgins 570, Concepción", countryId: 4, hasSubscription: false },
 
   // República Dominicana - Distrito Nacional (countryId: 5)
-  { parishId: 31, coordinates: { lat: 18.4861, long: -69.9312 }, title: "Catedral Primada de América", location: "Calle Arzobispo Meriño, Santo Domingo", countryId: 5 },
-  { parishId: 32, coordinates: { lat: 18.4765, long: -69.8933 }, title: "Basílica de Nuestra Señora de la Altagracia", location: "Av. Máximo Gómez, Santo Domingo", countryId: 5 },
+  { parishId: 31, coordinates: { lat: 18.4861, long: -69.9312 }, title: "Catedral Primada de América", location: "Calle Arzobispo Meriño, Santo Domingo", countryId: 5, hasSubscription: false },
+  { parishId: 32, coordinates: { lat: 18.4765, long: -69.8933 }, title: "Basílica de Nuestra Señora de la Altagracia", location: "Av. Máximo Gómez, Santo Domingo", countryId: 5, hasSubscription: false },
 
   // República Dominicana - Santiago (countryId: 5)
-  { parishId: 33, coordinates: { lat: 19.4517, long: -70.6970 }, title: "Catedral de Santiago", location: "Calle del Sol, Santiago", countryId: 5 },
-  { parishId: 34, coordinates: { lat: 19.4580, long: -70.6865 }, title: "Parroquia Santa Ana", location: "Av. 27 de Febrero, Santiago", countryId: 5 },
+  { parishId: 33, coordinates: { lat: 19.4517, long: -70.6970 }, title: "Catedral de Santiago", location: "Calle del Sol, Santiago", countryId: 5, hasSubscription: false },
+  { parishId: 34, coordinates: { lat: 19.4580, long: -70.6865 }, title: "Parroquia Santa Ana", location: "Av. 27 de Febrero, Santiago", countryId: 5, hasSubscription: false },
 
   // República Dominicana - La Vega (countryId: 5)
-  { parishId: 35, coordinates: { lat: 19.2222, long: -70.5298 }, title: "Catedral de La Vega", location: "Calle Independencia, La Vega", countryId: 5 },
-  { parishId: 36, coordinates: { lat: 19.2333, long: -70.5222 }, title: "Parroquia San Sebastián", location: "Calle Duarte, La Vega", countryId: 5 },
+  { parishId: 35, coordinates: { lat: 19.2222, long: -70.5298 }, title: "Catedral de La Vega", location: "Calle Independencia, La Vega", countryId: 5, hasSubscription: false },
+  { parishId: 36, coordinates: { lat: 19.2333, long: -70.5222 }, title: "Parroquia San Sebastián", location: "Calle Duarte, La Vega", countryId: 5, hasSubscription: false },
 
   // Perú - Lima (countryId: 6)
-  { parishId: 37, coordinates: { lat: -12.0464, long: -77.0428 }, title: "Catedral de Lima", location: "Jirón Carabaya, Lima", countryId: 6 },
-  { parishId: 38, coordinates: { lat: -12.0545, long: -77.0317 }, title: "Basílica San Francisco", location: "Jirón Lampa 248, Lima", countryId: 6 },
+  { parishId: 37, coordinates: { lat: -12.0464, long: -77.0428 }, title: "Catedral de Lima", location: "Jirón Carabaya, Lima", countryId: 6, hasSubscription: false },
+  { parishId: 38, coordinates: { lat: -12.0545, long: -77.0317 }, title: "Basílica San Francisco", location: "Jirón Lampa 248, Lima", countryId: 6, hasSubscription: false },
 
   // Perú - Arequipa (countryId: 6)
-  { parishId: 39, coordinates: { lat: -16.4090, long: -71.5375 }, title: "Catedral de Arequipa", location: "Plaza de Armas, Arequipa", countryId: 6 },
-  { parishId: 40, coordinates: { lat: -16.3988, long: -71.5369 }, title: "Monasterio Santa Catalina", location: "Santa Catalina 301, Arequipa", countryId: 6 },
+  { parishId: 39, coordinates: { lat: -16.4090, long: -71.5375 }, title: "Catedral de Arequipa", location: "Plaza de Armas, Arequipa", countryId: 6, hasSubscription: false },
+  { parishId: 40, coordinates: { lat: -16.3988, long: -71.5369 }, title: "Monasterio Santa Catalina", location: "Santa Catalina 301, Arequipa", countryId: 6, hasSubscription: false },
 
   // Perú - Cusco (countryId: 6)
-  { parishId: 41, coordinates: { lat: -13.5319, long: -71.9675 }, title: "Catedral del Cusco", location: "Plaza de Armas, Cusco", countryId: 6 },
-  { parishId: 42, coordinates: { lat: -13.5167, long: -71.9786 }, title: "Iglesia de la Compañía", location: "Plaza de Armas, Cusco", countryId: 6 },
+  { parishId: 41, coordinates: { lat: -13.5319, long: -71.9675 }, title: "Catedral del Cusco", location: "Plaza de Armas, Cusco", countryId: 6, hasSubscription: false },
+  { parishId: 42, coordinates: { lat: -13.5167, long: -71.9786 }, title: "Iglesia de la Compañía", location: "Plaza de Armas, Cusco", countryId: 6, hasSubscription: false },
 
   // Additional markers for other states (at least 2 per state)
   // Argentina - Entre Ríos (countryId: 1)
-  { parishId: 43, coordinates: { lat: -31.7333, long: -60.5289 }, title: "Catedral de Paraná", location: "San Martín 65, Paraná", countryId: 1 },
-  { parishId: 44, coordinates: { lat: -32.4800, long: -58.2350 }, title: "Parroquia Gualeguaychú", location: "San Martín 520, Gualeguaychú", countryId: 1 },
+  { parishId: 43, coordinates: { lat: -31.7333, long: -60.5289 }, title: "Catedral de Paraná", location: "San Martín 65, Paraná", countryId: 1, hasSubscription: false },
+  { parishId: 44, coordinates: { lat: -32.4800, long: -58.2350 }, title: "Parroquia Gualeguaychú", location: "San Martín 520, Gualeguaychú", countryId: 1, hasSubscription: false },
 
   // Argentina - Misiones (countryId: 1)
-  { parishId: 45, coordinates: { lat: -27.3621, long: -55.9007 }, title: "Catedral de Posadas", location: "Bolívar 1951, Posadas", countryId: 1 },
-  { parishId: 46, coordinates: { lat: -25.6947, long: -54.4367 }, title: "Parroquia Puerto Iguazú", location: "Av. Victoria Aguirre, Puerto Iguazú", countryId: 1 },
+  { parishId: 45, coordinates: { lat: -27.3621, long: -55.9007 }, title: "Catedral de Posadas", location: "Bolívar 1951, Posadas", countryId: 1, hasSubscription: false },
+  { parishId: 46, coordinates: { lat: -25.6947, long: -54.4367 }, title: "Parroquia Puerto Iguazú", location: "Av. Victoria Aguirre, Puerto Iguazú", countryId: 1, hasSubscription: false },
 
   // Uruguay - Paysandú (countryId: 2)
-  { parishId: 47, coordinates: { lat: -32.3167, long: -57.0833 }, title: "Catedral de Paysandú", location: "18 de Julio 1034, Paysandú", countryId: 2 },
-  { parishId: 48, coordinates: { lat: -32.3200, long: -57.0900 }, title: "Parroquia Nuestra Señora del Rosario", location: "Montevideo 1156, Paysandú", countryId: 2 },
+  { parishId: 47, coordinates: { lat: -32.3167, long: -57.0833 }, title: "Catedral de Paysandú", location: "18 de Julio 1034, Paysandú", countryId: 2, hasSubscription: false },
+  { parishId: 48, coordinates: { lat: -32.3200, long: -57.0900 }, title: "Parroquia Nuestra Señora del Rosario", location: "Montevideo 1156, Paysandú", countryId: 2, hasSubscription: false },
 
   // Uruguay - Salto (countryId: 2)
-  { parishId: 49, coordinates: { lat: -31.3833, long: -57.9667 }, title: "Catedral de Salto", location: "Uruguay 725, Salto", countryId: 2 },
-  { parishId: 50, coordinates: { lat: -31.3900, long: -57.9600 }, title: "Parroquia San José", location: "Artigas 456, Salto", countryId: 2 },
+  { parishId: 49, coordinates: { lat: -31.3833, long: -57.9667 }, title: "Catedral de Salto", location: "Uruguay 725, Salto", countryId: 2, hasSubscription: false },
+  { parishId: 50, coordinates: { lat: -31.3900, long: -57.9600 }, title: "Parroquia San José", location: "Artigas 456, Salto", countryId: 2, hasSubscription: false },
 
   // Paraguay - Alto Paraná (countryId: 3)
-  { parishId: 51, coordinates: { lat: -25.5000, long: -54.6167 }, title: "Catedral de Ciudad del Este", location: "Av. San Blas, Ciudad del Este", countryId: 3 },
-  { parishId: 52, coordinates: { lat: -25.5095, long: -54.6116 }, title: "Parroquia Cristo Rey", location: "Av. Pioneros del Este, Ciudad del Este", countryId: 3 },
+  { parishId: 51, coordinates: { lat: -25.5000, long: -54.6167 }, title: "Catedral de Ciudad del Este", location: "Av. San Blas, Ciudad del Este", countryId: 3, hasSubscription: false },
+  { parishId: 52, coordinates: { lat: -25.5095, long: -54.6116 }, title: "Parroquia Cristo Rey", location: "Av. Pioneros del Este, Ciudad del Este", countryId: 3, hasSubscription: false },
 
   // Chile - Araucanía (countryId: 4)
-  { parishId: 53, coordinates: { lat: -38.7359, long: -72.5904 }, title: "Catedral de Temuco", location: "Manuel Bulnes 847, Temuco", countryId: 4 },
-  { parishId: 54, coordinates: { lat: -38.7400, long: -72.5950 }, title: "Parroquia Santa Rosa", location: "Prat 567, Temuco", countryId: 4 },
+  { parishId: 53, coordinates: { lat: -38.7359, long: -72.5904 }, title: "Catedral de Temuco", location: "Manuel Bulnes 847, Temuco", countryId: 4, hasSubscription: false },
+  { parishId: 54, coordinates: { lat: -38.7400, long: -72.5950 }, title: "Parroquia Santa Rosa", location: "Prat 567, Temuco", countryId: 4, hasSubscription: false },
 
   // Chile - Los Lagos (countryId: 4)
-  { parishId: 55, coordinates: { lat: -41.4693, long: -72.9396 }, title: "Catedral de Puerto Montt", location: "Benavente 441, Puerto Montt", countryId: 4 },
-  { parishId: 56, coordinates: { lat: -41.4750, long: -72.9450 }, title: "Parroquia del Carmen", location: "Urmeneta 570, Puerto Montt", countryId: 4 },
+  { parishId: 55, coordinates: { lat: -41.4693, long: -72.9396 }, title: "Catedral de Puerto Montt", location: "Benavente 441, Puerto Montt", countryId: 4, hasSubscription: false },
+  { parishId: 56, coordinates: { lat: -41.4750, long: -72.9450 }, title: "Parroquia del Carmen", location: "Urmeneta 570, Puerto Montt", countryId: 4, hasSubscription: false },
 ];
 
 /**
@@ -257,14 +258,14 @@ export const getParishDetails = async (parishId: number): Promise<any | null> =>
         days: [
           {
             name: "saturday",
-            times: [{ startTime: "19:00 UTC", endTime: "20:00 UTC" }]
+            times: [{ startTime: "19:00", endTime: "20:00" }]
           },
           {
             name: "sunday",
             times: [
-              { startTime: "09:00 UTC", endTime: "10:00 UTC" },
-              { startTime: "11:00 UTC", endTime: "12:00 UTC" },
-              { startTime: "19:00 UTC", endTime: "20:00 UTC" }
+              { startTime: "09:00", endTime: "10:00" },
+              { startTime: "11:00", endTime: "12:00" },
+              { startTime: "19:00", endTime: "20:00" }
             ]
           }
         ]

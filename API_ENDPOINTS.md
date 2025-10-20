@@ -40,6 +40,9 @@ GET /public/parish/{parishId}
 - `parishId` (number, required): Unique parish identifier
 
 ### Example Response
+
+**Note:** All times (startTime, endTime) are in the parish's local country timezone, formatted as "HH:MM" (24-hour format).
+
 ```json
 {
   "id": 1,
@@ -64,14 +67,14 @@ GET /public/parish/{parishId}
         {
           "name" : "saturday",
           "times" : [
-            {"startTime": "11:00 UTC", "endTime": "12:00 UTC"},
+            {"startTime": "11:00", "endTime": "12:00"},
             ]
         },
         {
           "name" : "sunday",
           "times" : [
-            {"startTime": "11:00 UTC", "endTime": "12:00 UTC"},
-            {"startTime": "18:00 UTC", "endTime": "21:00 UTC"}
+            {"startTime": "11:00", "endTime": "12:00"},
+            {"startTime": "18:00", "endTime": "21:00"}
             ]
         },
       ]
@@ -116,7 +119,8 @@ GET /public/parish/markers?min_lon={minLon}&min_lat={minLat}&max_lon={maxLon}&ma
       },
       "title": "Parroquia San Juan Bautista",
       "location": "Buenos Aires, Argentina",
-      "countryId": 1
+      "countryId": 1,
+      "hasSubscription": false
     }
   ]
 }

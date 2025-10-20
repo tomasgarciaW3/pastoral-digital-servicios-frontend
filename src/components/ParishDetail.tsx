@@ -23,6 +23,18 @@ const getDayName = (day: string) => {
   return days[day] || day;
 };
 
+const getCountryCode = (country: string) => {
+  const countryCodes: Record<string, string> = {
+    Argentina: "ARG",
+    Uruguay: "URY",
+    Paraguay: "PRY",
+    Chile: "CHL",
+    "República Dominicana": "DOM",
+    Perú: "PER",
+  };
+  return countryCodes[country] || country;
+};
+
 export const ParishDetail = ({ parish, onSchedule, onClose }: ParishDetailProps) => {
   try {
 
@@ -50,18 +62,18 @@ export const ParishDetail = ({ parish, onSchedule, onClose }: ParishDetailProps)
   }
 
   try {
-    return (
-      <div className="flex-1 overflow-y-auto p-6 space-y-6 animate-fade-in relative scrollbar-thin">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onClose}
-          className="absolute top-2 right-2 z-10"
-        >
-          <X className="h-4 w-4" />
-        </Button>
+     return (
+       <div className="flex-1 overflow-y-auto px-6 pb-6 pt-1 space-y-6 animate-fade-in relative scrollbar-thin">
+         <Button
+           variant="ghost"
+           size="icon"
+           onClick={onClose}
+           className="absolute top-2 right-2 z-10"
+         >
+           <X className="h-4 w-4" />
+         </Button>
 
-        <Card className="shadow-soft">
+         <Card className="shadow-soft">
           <CardHeader>
             <CardTitle className="text-2xl">{parish.name || "Sin nombre"}</CardTitle>
             <CardDescription className="text-sm">{parish.priest || "Sin información"}</CardDescription>
@@ -119,7 +131,7 @@ export const ParishDetail = ({ parish, onSchedule, onClose }: ParishDetailProps)
                               <span className="font-medium min-w-[100px]">{getDayName(day.name)}:</span>
                               <span className="text-muted-foreground">
                                 {day.times && day.times.length > 0
-                                  ? day.times.map((time) => `${time.startTime} - ${time.endTime}`).join(", ")
+                                  ? day.times.map((time) => `${time.startTime} - ${time.endTime}`).join(", ") + ` (${getCountryCode(parish.country)})`
                                   : "Sin horarios específicos"}
                               </span>
                             </div>

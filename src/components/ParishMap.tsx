@@ -38,13 +38,25 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, p
     googleMapsApiKey: GOOGLE_MAPS_API_KEY,
   });
 
-  // Custom marker icon - only create after Google Maps is loaded
+  // Custom marker icons - only create after Google Maps is loaded
   const customIcon = isLoaded ? {
     url: "/marker.png",
     scaledSize: new google.maps.Size(37.5, 52.5), // Pin shape: 25% smaller
     origin: new google.maps.Point(0, 0),
     anchor: new google.maps.Point(18.75, 52.5), // Anchor at the tip of the pin (bottom center)
   } : undefined;
+
+  const greyIcon = isLoaded ? {
+    url: "/marker-grey.png",
+    scaledSize: new google.maps.Size(37.5, 52.5), // Pin shape: 25% smaller
+    origin: new google.maps.Point(0, 0),
+    anchor: new google.maps.Point(18.75, 52.5), // Anchor at the tip of the pin (bottom center)
+  } : undefined;
+
+  // Function to get the appropriate icon based on subscription status
+  const getMarkerIcon = (hasSubscription: boolean) => {
+    return hasSubscription ? customIcon : greyIcon;
+  };
 
   // Request user's location on mount
   useEffect(() => {
@@ -233,77 +245,55 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, p
 
   // Fetch markers when map bounds change - using ref to track bounds across renders
   const lastBoundsRef = useRef<string | null>(null);
-  const fetchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleBoundsChanged = useCallback(() => {
     if (!map) return;
 
-    const currentBounds = map.getBounds();
-    if (!currentBounds) {
+    const bounds = map.getBounds();
+    if (!bounds) {
       return;
     }
 
-    const ne = currentBounds.getNorthEast();
-    const sw = currentBounds.getSouthWest();
+    const ne = bounds.getNorthEast();
+    const sw = bounds.getSouthWest();
+
+    // Create a string representation of bounds to detect actual changes
     const boundsKey = `${sw.lat().toFixed(4)},${sw.lng().toFixed(4)},${ne.lat().toFixed(4)},${ne.lng().toFixed(4)}`;
 
-
-    // Clear existing timeout
-    if (fetchTimeoutRef.current) {
-      clearTimeout(fetchTimeoutRef.current);
+    // Skip if bounds haven't actually changed (within 4 decimal places)
+    if (boundsKey === lastBoundsRef.current) {
+      return;
     }
 
+    lastBoundsRef.current = boundsKey;
 
-    // Schedule fetch after debounce
-    fetchTimeoutRef.current = setTimeout(() => {
+    // Convert country name to ID
+    let countryId: number | undefined = undefined;
+    if (country !== "all") {
+      const COUNTRY_IDS: Record<string, number> = {
+        Argentina: 1,
+        Uruguay: 2,
+        Paraguay: 3,
+        Chile: 4,
+        "República Dominicana": 5,
+        Perú: 6,
+      };
+      countryId = COUNTRY_IDS[country];
+    }
 
-      const bounds = map.getBounds();
-      if (!bounds) {
-        return;
-      }
-
-      const ne = bounds.getNorthEast();
-      const sw = bounds.getSouthWest();
-
-      // Create a string representation of bounds to detect actual changes
-      const boundsKey = `${sw.lat().toFixed(4)},${sw.lng().toFixed(4)},${ne.lat().toFixed(4)},${ne.lng().toFixed(4)}`;
-
-
-      // Skip if bounds haven't actually changed (within 4 decimal places)
-      if (boundsKey === lastBoundsRef.current) {
-        return;
-      }
-
-      lastBoundsRef.current = boundsKey;
-
-      // Convert country name to ID
-      let countryId: number | undefined = undefined;
-      if (country !== "all") {
-        const COUNTRY_IDS: Record<string, number> = {
-          Argentina: 1,
-          Uruguay: 2,
-          Paraguay: 3,
-          Chile: 4,
-          "República Dominicana": 5,
-          Perú: 6,
-        };
-        countryId = COUNTRY_IDS[country];
-      }
-
-      getParishMarkers({
-        min_lat: sw.lat(),
-        max_lat: ne.lat(),
-        min_lon: sw.lng(),
-        max_lon: ne.lng(),
-        countryId,
+    getParishMarkers({
+      min_lat: sw.lat(),
+      max_lat: ne.lat(),
+      min_lon: sw.lng(),
+      max_lon: ne.lng(),
+      countryId,
+    })
+      .then((response) => {
+        setMarkers(response.markers);
       })
-        .then((response) => {
-          setMarkers(response.markers);
-        })
-        .catch((error) => {
-          console.error("❌ Error fetching markers:", error);
-        });
-    }, 1000); // Wait 1 second after bounds stop changing
+      .catch((error) => {
+        console.error("❌ Error fetching markers:", error);
+      });
   }, [map, country, services]);
 
 
@@ -316,16 +306,10 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, p
 
     const listener = map.addListener("bounds_changed", handleBoundsChanged);
 
-    // Initial fetch after a short delay
-    const initialTimeout = setTimeout(() => {
-      handleBoundsChanged();
-    }, 500);
+    // Initial fetch immediately
+    handleBoundsChanged();
 
     return () => {
-      if (fetchTimeoutRef.current) {
-        clearTimeout(fetchTimeoutRef.current);
-      }
-      clearTimeout(initialTimeout);
       google.maps.event.removeListener(listener);
     };
   }, [map, handleBoundsChanged]);
@@ -382,7 +366,7 @@ export const ParishMap = ({ parishes, selectedParish, onParishSelect, country, p
             key={`marker-${marker.parishId}`}
             position={{ lat: marker.coordinates.lat, lng: marker.coordinates.long }}
             onClick={() => handleApiMarkerClick(marker)}
-            icon={customIcon}
+            icon={getMarkerIcon(marker.hasSubscription)}
           >
             {activeMarker === marker.parishId && (
               <InfoWindow onCloseClick={() => setActiveMarker(null)}>
