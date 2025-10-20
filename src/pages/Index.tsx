@@ -47,6 +47,11 @@ const Index = () => {
     }
   }, []);
 
+  // Clear selected parish when country or province changes
+  useEffect(() => {
+    setSelectedParish(null);
+  }, [filters.country, filters.province]);
+
   const filteredParishes = useMemo(() => {
     return mockParishes.filter((parish) => {
       // Filter by selected parishes
