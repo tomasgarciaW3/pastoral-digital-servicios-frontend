@@ -1,0 +1,7 @@
+[install]
+# Use exact versions for production builds
+exact = true
+# Cache dependencies
+cache = true
+# Use frozen lockfile for production
+frozen = true
