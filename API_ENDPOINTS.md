@@ -33,7 +33,7 @@ GET /public/parish?name-or-location={query}
 ## 2. Get Parish Details
 
 ```
-GET /public/parish/{parishId}
+GET /public/parish-by-id/{parishIhd}
 ```
 
 ### Path Parameters
@@ -56,6 +56,7 @@ GET /public/parish/{parishId}
     "lat": -34.6037,
     "lng": -58.3816
   },
+  "placeId": "6e2e7a6d5fb!8m2",
   "phone": "+54 11 4567-8900",
   "email": "contacto@sanjuanbautista.org.ar",
   "website": "https://example.com",
@@ -75,7 +76,7 @@ GET /public/parish/{parishId}
           "times" : [
             {"startTime": "11:00", "endTime": "12:00"},
             {"startTime": "18:00", "endTime": "21:00"}
-            ]
+          ]
         },
       ]
     },
