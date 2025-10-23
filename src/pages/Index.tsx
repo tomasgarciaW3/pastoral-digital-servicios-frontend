@@ -12,6 +12,7 @@ import { reverseGeocode } from "@/services/geocodingService";
 const Index = () => {
   const [selectedParish, setSelectedParish] = useState<Parish | null>(null);
   const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
+  const [chatbotOpen, setChatbotOpen] = useState(true);
   const [filters, setFilters] = useState<FilterState>({
     search: "",
     selectedParishes: [],
@@ -51,6 +52,13 @@ const Index = () => {
   useEffect(() => {
     setSelectedParish(null);
   }, [filters.country, filters.province]);
+
+  // Close chatbot when schedule modal opens
+  useEffect(() => {
+    if (scheduleModalOpen) {
+      setChatbotOpen(false);
+    }
+  }, [scheduleModalOpen]);
 
   const filteredParishes = useMemo(() => {
     return mockParishes.filter((parish) => {
@@ -122,7 +130,7 @@ const Index = () => {
         parish={selectedParish}
       />
 
-      <Chatbot />
+      <Chatbot isOpen={chatbotOpen} onOpenChange={setChatbotOpen} />
     </div>
   );
 };
